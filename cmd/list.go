@@ -20,6 +20,7 @@ import (
 	"log"
 
 	"github.com/spf13/cobra"
+	"tfactl/utils"
 )
 
 // listCmd represents the list command
@@ -35,7 +36,7 @@ var listCmd = &cobra.Command{
 		log.Println("Printing the constructed information")
 		//printGreen(fmt.Sprintf("Platform URL is: %s\n", platformURL))
 		//printGreen(fmt.Sprintf("TFA Classifier URL is: %s\n", tfaURL))
-		var info Info
+		var info utils.Info
 		viper0.Unmarshal(&info)
 		fmt.Print(info.PlatformURL, "\n", info.TFAURL)
 		//fmt.Print(viper0.GetStringMapString("TFAConfig"))
