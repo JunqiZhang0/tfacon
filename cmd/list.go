@@ -17,7 +17,7 @@ package cmd
 
 import (
 	"fmt"
-	"log"
+	"tfacon/core"
 
 	"github.com/spf13/cobra"
 )
@@ -26,24 +26,14 @@ import (
 var listCmd = &cobra.Command{
 	Use:   "list",
 	Short: "list all constructed information",
-	Long:  `list all information constructed from tfa.yml/enviroment variables/cli`,
+	Long:  `list all information constructed from tfacon.yml/enviroment variables/cli`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("--------------------------------------------------")
-		fmt.Printf("tfactl  %s\n", rootCmd.Version)
-		fmt.Println("Copyright (C) 2021, Red Hat, Inc.")
-		fmt.Print("-------------------------------------------------\n\n\n")
-		log.Println("Printing the constructed information")
-		//printGreen(fmt.Sprintf("Platform URL is: %s\n", platformURL))
-		//printGreen(fmt.Sprintf("TFA Classifier URL is: %s\n", tfaURL))
-		var info Info
-		viper0.Unmarshal(&info)
-		fmt.Print(info.PlatformURL, "\n", info.TFAURL)
-		//fmt.Print(viper0.GetStringMapString("TFAConfig"))
+		printHeader()
+		printGreen(fmt.Sprintf("%+v\n", core.GetInfo(viper0)))
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(listCmd)
-
-	initConfig(listCmd)
+	initConfig(listCmd, cmdInfoList)
 }

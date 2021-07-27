@@ -22,12 +22,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var cfgFile string
-var version *bool
+// var cfgFile string
+// var version *bool
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "tfactl",
+	Use:   "tfacon",
 	Short: "A connector tool to connect testing platform and TFA Classifier",
 	Long:  `A connector tool to connect testing platform and TFA Classifier`,
 	Run: func(cmd *cobra.Command, args []string) {

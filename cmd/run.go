@@ -16,7 +16,7 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
+	"tfacon/core"
 
 	"github.com/spf13/cobra"
 )
@@ -24,28 +24,16 @@ import (
 // runCmd represents the run command
 var runCmd = &cobra.Command{
 	Use:   "run",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "run the info retrival and get the pridiction from TFA",
+	Long:  `run the info retrival and get the pridiction from TFA`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("run called")
+		// viper0.Unmarshal(&platform)
+		// viper0.Unmarshal(&tfa)
+		core.Run(viper0)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(runCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// runCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// runCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	initConfig(runCmd, cmdInfoList)
 }

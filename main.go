@@ -15,7 +15,7 @@ limitations under the License.
 */
 package main
 
-import "tfactl/cmd"
+import "tfacon/cmd"
 
 func main() {
 	cmd.Execute()
