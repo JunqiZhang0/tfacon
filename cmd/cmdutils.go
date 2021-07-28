@@ -10,11 +10,6 @@ var platformURL string
 var tfaURL string
 var viper0 *viper.Viper
 
-type Info struct {
-	PlatformURL string `mapstructure:"platformURL"`
-	TFAURL      string `mapstructure:"tfaURL"`
-}
-
 func initConfig(cmd *cobra.Command) {
 	viper0 = viper.New()
 	viper0.AddConfigPath(".")

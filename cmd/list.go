@@ -36,9 +36,9 @@ var listCmd = &cobra.Command{
 		log.Println("Printing the constructed information")
 		//printGreen(fmt.Sprintf("Platform URL is: %s\n", platformURL))
 		//printGreen(fmt.Sprintf("TFA Classifier URL is: %s\n", tfaURL))
-		var info utils.Info
+		var info utils.Platform
 		viper0.Unmarshal(&info)
-		fmt.Print(info.PlatformURL, "\n", info.TFAURL)
+		fmt.Print(info.PlatformURL, "\n")
 		//fmt.Print(viper0.GetStringMapString("TFAConfig"))
 	},
 }

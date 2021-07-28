@@ -12,3 +12,20 @@ type Data struct {
 type TFAResponse struct {
 	Prediction string `json:"prediction"`
 }
+
+type TFA struct {
+	TFAURL string `mapstructure:"tfaURL"`
+}
+
+func (t *TFA) buildHeader() {
+	//fill the header field
+}
+
+func (t *TFA) post() (err error) {
+	// post
+	return nil
+}
+func (t *TFA) get() (resp *TFAResponse) {
+	//get with the full p.URL + full query
+	return &TFAResponse{}
+}
