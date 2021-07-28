@@ -5,8 +5,9 @@ type TFARequest struct {
 }
 
 type Data struct {
-	Id      string `json:"id"`
-	Project string `json:"project"`
+	Id       string `json:"id"`
+	Project  string `json:"project"`
+	Messages string `json:"messages"`
 }
 
 type TFAResponse struct {

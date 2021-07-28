@@ -9,6 +9,9 @@ type PlatformRequest struct {
 }
 
 type PlatformResponse struct {
+	Id       string `json:"id"`
+	Project  string `json:"project"`
+	Messages string `json:"messages"`
 }
 
 type Platform struct {
