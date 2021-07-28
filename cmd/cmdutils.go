@@ -16,19 +16,20 @@ func initConfig(cmd *cobra.Command) {
 	viper0.SetConfigName("tfa")
 	//if
 	viper0.AutomaticEnv()
-	if viper0.GetString("PLATFORMURL") == "" {
-		viper0.SetDefault("platformURL", "https://platform.com/test")
+	initViperVal(cmd, viper0, "tfa-url", "TFAUL", "default val for tfa url", "The url to the TFA Classifier")
+	initViperVal(cmd, viper0, "platform-url", "PLATFORMURL", "default val for platform url", "The url to the test platform")
+}
+
+func initViperVal(cmd *cobra.Command, viper *viper.Viper, cmdName, valName, defaultVal, cmdDescription string) {
+
+	if viper.GetString(valName) == "" {
+		viper.SetDefault(valName, defaultVal)
 	} else {
-		viper0.SetDefault("platformURL", viper0.GetString("PLATFORMURL"))
+		viper.SetDefault(valName, viper.GetString(valName))
 	}
-	if viper0.GetString("TFAURL") == "" {
-		viper0.SetDefault("tfaURL", "default tfaURL")
-	} else {
-		viper0.SetDefault("tfaURL", viper0.GetString("TFAURL"))
-	}
-	viper0.ReadInConfig()
-	cmd.PersistentFlags().StringVarP(&platformURL, "platform-url", "", viper0.GetString("platformURL"), "The url to the platform")
-	cmd.PersistentFlags().StringVarP(&tfaURL, "tfa-url", "", viper0.GetString("tfaURL"), "The url to the TFA Classifer")
+	cmd.PersistentFlags().StringP(cmdName, "", viper.GetString(valName), cmdDescription)
+	viper.BindPFlag(valName, cmd.PersistentFlags().Lookup(cmdName))
+	viper.ReadInConfig()
 }
 
 func printGreen(str string) {
