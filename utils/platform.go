@@ -12,7 +12,7 @@ type PlatformResponse struct {
 }
 
 type Platform struct {
-	PlatformURL string `mapstructure:"platformURL"`
+	PlatformURL string `mapstructure:"PLATFORMURL"`
 }
 
 //fill the header field

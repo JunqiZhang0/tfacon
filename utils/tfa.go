@@ -14,7 +14,7 @@ type TFAResponse struct {
 }
 
 type TFA struct {
-	TFAURL string `mapstructure:"tfaURL"`
+	TFAURL string `mapstructure:"TFAURL"`
 }
 
 func (t *TFA) buildHeader() {
