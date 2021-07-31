@@ -9,18 +9,18 @@ import (
 	"github.com/spf13/viper"
 )
 
-var platformURL string
-var tfaURL string
+// var platformURL string
+// var tfaURL string
 var viper0 *viper.Viper
 
 var cmdInfoList []map[string]string = []map[string]string{
-	map[string]string{
+	{
 		"cmdName":        "tfa-url",
 		"valName":        "TFAURL",
 		"defaultVal":     "default val for tfa url",
 		"cmdDescription": "The url to the TFA Classifier",
 	},
-	map[string]string{
+	{
 		"cmdName":        "platform-url",
 		"valName":        "PLATFORMURL",
 		"defaultVal":     "default val for platform url",

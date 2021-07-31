@@ -1,11 +1,11 @@
 package utils
 
 type PlatformRequest struct {
-	Project    string
-	Auth_Token string
-	URL        string
-	TFAURL     string
-	Header     []string
+	Project    string   `mapstructure:"PROJECT" json:"project"`
+	Auth_Token string   `mapstructure:"Auth_Token" json:"project"`
+	URL        string   `mapstructure:"PROJECT" json:"project"`
+	TFAURL     string   `mapstructure:"PROJECT" json:"project"`
+	Header     []string `mapstructure:"PROJECT" json:"project"`
 }
 
 type PlatformResponse struct {
@@ -15,7 +15,7 @@ type PlatformResponse struct {
 }
 
 type Platform struct {
-	PlatformURL string `mapstructure:"PLATFORMURL"`
+	PlatformURL string `mapstructure:"PLATFORMURL" json:"platformURL"`
 }
 
 //fill the header field
