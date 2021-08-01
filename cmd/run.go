@@ -16,6 +16,8 @@ limitations under the License.
 package cmd
 
 import (
+	"tfactl/core"
+
 	"github.com/spf13/cobra"
 )
 
@@ -27,6 +29,7 @@ var runCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		// viper0.Unmarshal(&platform)
 		// viper0.Unmarshal(&tfa)
+		core.Run(viper0)
 	},
 }
 

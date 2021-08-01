@@ -16,6 +16,9 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
+	"tfactl/core"
+
 	"github.com/spf13/cobra"
 )
 
@@ -23,13 +26,10 @@ import (
 var listCmd = &cobra.Command{
 	Use:   "list",
 	Short: "list all constructed information",
-	Long:  `list all information constructed from tfa.yml/enviroment variables/cli`,
+	Long:  `list all information constructed from tfacon.yml/enviroment variables/cli`,
 	Run: func(cmd *cobra.Command, args []string) {
 		printHeader()
-		// viper0.Unmarshal(&platform)
-		// viper0.Unmarshal(&tfa)
-		// printGreen(fmt.Sprintf("TFA Classifier is: %s\n", tfa))
-		// printGreen(fmt.Sprintf("Test Platform is: %s\n", platform))
+		printGreen(fmt.Sprintf("%+v\n", core.GetInfo(viper0)))
 	},
 }
 

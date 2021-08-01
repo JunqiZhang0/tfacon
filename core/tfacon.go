@@ -1,6 +1,7 @@
 package core
 
 import (
+	"net/http"
 	"tfactl/common"
 	"tfactl/connectors"
 
@@ -8,23 +9,30 @@ import (
 )
 
 type TFACon interface {
-	UpdateAll(common.UpdatedList)
 	GetAllTestIds() []string
-	BuildUpdatedList(ids []string) common.UpdatedList
+	BuildUpdatedList(ids []string) common.GeneralUpdatedList
+	UpdateAll(common.GeneralUpdatedList)
 }
 
 func Run(viper *viper.Viper) {
 	var con TFACon = GetCon(viper)
+	// fmt.Printf("%+v\n", con)
+	// fmt.Println("===========================")
 	ids := con.GetAllTestIds()
 	updated_list_of_issues := con.BuildUpdatedList(ids)
 	con.UpdateAll(updated_list_of_issues)
 }
 
+func GetInfo(viper *viper.Viper) TFACon {
+	var con TFACon = GetCon(viper)
+	return con
+}
+
 func GetCon(viper *viper.Viper) TFACon {
 	var con TFACon
-	switch viper.Get("ConnectorType") {
+	switch viper.Get("CONNECTOR_TYPE") {
 	case "RPCon":
-		con = &connectors.RPConnector{}
+		con = &connectors.RPConnector{Client: &http.Client{}}
 		viper.Unmarshal(con)
 		// case "POLCon":
 		// 	con = RPConnector{}

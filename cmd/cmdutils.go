@@ -13,25 +13,56 @@ import (
 // var tfaURL string
 var viper0 *viper.Viper
 
+// launch_id := "909"
+// project_name := "TEFLO_RP"
+// auth_token := "510256fa-8a43-4b6b-a0d2-c3388d9164a9"
+// rp_url := "https://reportportal-ccit.apps.ocp4.prod.psi.redhat.com"
+// tfa_url := "https://dave.corp.redhat.com:443/models/5f248eb11e43c7000602300b/latest/model"
+
 var cmdInfoList []map[string]string = []map[string]string{
 	{
 		"cmdName":        "tfa-url",
-		"valName":        "TFAURL",
+		"valName":        "TFA_URL",
 		"defaultVal":     "default val for tfa url",
 		"cmdDescription": "The url to the TFA Classifier",
 	},
 	{
 		"cmdName":        "platform-url",
-		"valName":        "PLATFORMURL",
+		"valName":        "PLATFORM_URL",
 		"defaultVal":     "default val for platform url",
-		"cmdDescription": "The url to the test platform",
+		"cmdDescription": "The url to the test platform(example: https://reportportal-ccit.apps.ocp4.prod.psi.redhat.com)",
 	},
+	{
+		"cmdName":        "connector-type",
+		"valName":        "CONNECTOR_TYPE",
+		"defaultVal":     "RPCon",
+		"cmdDescription": "The type of connector you want to use(example: RPCon, PolarionCon, JiraCon)",
+	},
+	{
+		"cmdName":        "launch-id",
+		"valName":        "LAUNCH_ID",
+		"defaultVal":     "",
+		"cmdDescription": "The launch id of report portal",
+	},
+	{
+		"cmdName":        "project-name",
+		"valName":        "PROJECT_NAME",
+		"defaultVal":     "",
+		"cmdDescription": "The project name of report portal",
+	},
+	{
+		"cmdName":        "auth-token",
+		"valName":        "AUTH_TOKEN",
+		"defaultVal":     "",
+		"cmdDescription": "The AUTH_TOKEN of report portal",
+	},
+	// Client      *http.Client
 }
 
 func initConfig(cmd *cobra.Command, cmdInfoList []map[string]string) {
 	viper0 = viper.New()
 	viper0.AddConfigPath(".")
-	viper0.SetConfigName("tfa")
+	viper0.SetConfigName("tfacon")
 	viper0.AutomaticEnv()
 	for _, v := range cmdInfoList {
 
