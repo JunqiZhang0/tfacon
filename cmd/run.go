@@ -25,8 +25,8 @@ var runCmd = &cobra.Command{
 	Short: "run the info retrival and get the pridiction from TFA",
 	Long:  `run the info retrival and get the pridiction from TFA`,
 	Run: func(cmd *cobra.Command, args []string) {
-		viper0.Unmarshal(&platform)
-		viper0.Unmarshal(&tfa)
+		// viper0.Unmarshal(&platform)
+		// viper0.Unmarshal(&tfa)
 	},
 }
 
