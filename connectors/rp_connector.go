@@ -36,7 +36,6 @@ func (u UpdatedList) GetSelf() common.GeneralUpdatedList {
 }
 
 type RPConnector struct {
-	// Todo: Add marshal tag for viper(mapstructure)
 	LaunchId    string `mapstructure:"LAUNCH_ID"`
 	ProjectName string `mapstructure:"PROJECT_NAME"`
 	AuthToken   string `mapstructure:"AUTH_TOKEN"`
@@ -76,7 +75,6 @@ func (c *RPConnector) BuildUpdatedList(ids []string) common.GeneralUpdatedList {
 func (c *RPConnector) BuildIssues(ids []string) Issues {
 	var issues Issues = Issues{}
 	for _, id := range ids {
-		// fmt.Println(id)
 		log.Printf("Getting prediction of test item(id): %s\n", id)
 		logs := c.GetTestLog(id)
 		// Make logs to string(in []byte format)
