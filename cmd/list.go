@@ -17,7 +17,8 @@ package cmd
 
 import (
 	"fmt"
-	"tfacon/core"
+
+	"github.com/JunqiZhang0/tfacon/core"
 
 	"github.com/spf13/cobra"
 )
