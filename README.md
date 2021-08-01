@@ -16,4 +16,9 @@
 ## Developer Guide
 ### Archietrcue
 #### UML graph
+#### OOD brief explanation
 ### concurrency
+
+## Contributor Guide
+### Branch name
+
