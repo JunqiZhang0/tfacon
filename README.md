@@ -4,6 +4,14 @@
 
 ## User Guide
 ### Installation
+##### Via go get
+```bash
+go get -u github.com/JunqiZhang0/tfacon
+```
+##### Via go get(To be added)
+```bash
+pip install tfacon
+```
 ### Get Started
 #### list
 #### run
