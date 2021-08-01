@@ -16,7 +16,7 @@ limitations under the License.
 package cmd
 
 import (
-	"tfactl/core"
+	"tfacon/core"
 
 	"github.com/spf13/cobra"
 )

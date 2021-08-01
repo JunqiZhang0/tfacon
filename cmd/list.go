@@ -17,7 +17,7 @@ package cmd
 
 import (
 	"fmt"
-	"tfactl/core"
+	"tfacon/core"
 
 	"github.com/spf13/cobra"
 )

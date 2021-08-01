@@ -89,7 +89,7 @@ func printGreen(str string) {
 }
 func printHeader() {
 	fmt.Println("--------------------------------------------------")
-	fmt.Printf("tfactl  %s\n", rootCmd.Version)
+	fmt.Printf("tfacon  %s\n", rootCmd.Version)
 	fmt.Println("Copyright (C) 2021, Red Hat, Inc.")
 	fmt.Print("-------------------------------------------------\n\n\n")
 	log.Println("Printing the constructed information")

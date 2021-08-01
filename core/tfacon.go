@@ -2,8 +2,8 @@ package core
 
 import (
 	"net/http"
-	"tfactl/common"
-	"tfactl/connectors"
+	"tfacon/common"
+	"tfacon/connectors"
 
 	"github.com/spf13/viper"
 )

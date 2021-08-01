@@ -1,4 +1,4 @@
-module tfactl
+module tfacon
 
 go 1.15
 
