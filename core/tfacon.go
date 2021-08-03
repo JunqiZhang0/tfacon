@@ -14,6 +14,7 @@ type TFACon interface {
 	GetAllTestIds() []string
 	BuildUpdatedList(ids []string) common.GeneralUpdatedList
 	UpdateAll(common.GeneralUpdatedList)
+	String() string
 }
 
 func Run(viper *viper.Viper) {

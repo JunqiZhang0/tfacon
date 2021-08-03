@@ -19,6 +19,7 @@ import (
 	"github.com/JunqiZhang0/tfacon/core"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // runCmd represents the run command
@@ -27,13 +28,13 @@ var runCmd = &cobra.Command{
 	Short: "run the info retrival and get the pridiction from TFA",
 	Long:  `run the info retrival and get the pridiction from TFA`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// viper0.Unmarshal(&platform)
-		// viper0.Unmarshal(&tfa)
-		core.Run(viper0)
+		core.Run(viperRun)
 	},
 }
+var viperRun *viper.Viper
 
 func init() {
 	rootCmd.AddCommand(runCmd)
-	initConfig(runCmd, cmdInfoList)
+	viperRun = viper.New()
+	initConfig(viperRun, runCmd, cmdInfoList)
 }

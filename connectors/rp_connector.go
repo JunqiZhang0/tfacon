@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"reflect"
 
 	"github.com/JunqiZhang0/tfacon/common"
 
@@ -43,6 +44,16 @@ type RPConnector struct {
 	RPURL       string `mapstructure:"PLATFORM_URL"`
 	Client      *http.Client
 	TFAURL      string `mapstructure:"TFA_URL"`
+}
+
+func (c RPConnector) String() string {
+	v := reflect.ValueOf(c)
+	typeOfS := v.Type()
+	str := ""
+	for i := 0; i < v.NumField(); i++ {
+		str = str + fmt.Sprintf("%s: \t %v\n", typeOfS.Field(i).Name, v.Field(i).Interface())
+	}
+	return str
 }
 
 func (c *RPConnector) UpdateAll(updated_list_of_issues common.GeneralUpdatedList) {
