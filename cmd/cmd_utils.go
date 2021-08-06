@@ -95,7 +95,11 @@ func initTFAConfigFile(viper *viper.Viper) {
 	} else {
 		file, err = ioutil.ReadFile("./tfacon.cfg")
 	}
-
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println(r)
+		}
+	}()
 	if err != nil {
 		panic(err)
 	}

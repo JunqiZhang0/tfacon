@@ -3,7 +3,7 @@ package connectors
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
+
 	"fmt"
 	"io/ioutil"
 	"log"

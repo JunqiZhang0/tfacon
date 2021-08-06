@@ -42,5 +42,5 @@ var viperValidate *viper.Viper
 func init() {
 	rootCmd.AddCommand(validateCmd)
 	viperValidate = viper.New()
-	initConfig(viperList, listCmd, cmdInfoList)
+	initConfig(viperList, validateCmd, cmdInfoList)
 }
