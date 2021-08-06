@@ -1,6 +1,0 @@
-launch_id: "968"
-project_name: "TEFLO_RP"
-auth_token: "510256fa-8a43-4b6b-a0d2-c3388d9164a9"
-PLATFORM_URL: "https://reportportal-ccit.apps.ocp4.prod.psi.redhat.com"
-tfa_url: "https://dave.corp.redhat.com:443/models/5f248eb11e43c7000602300b/latest/model"
-CONNECTOR_TYPE: "RPCon"
