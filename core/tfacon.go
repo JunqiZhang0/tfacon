@@ -15,6 +15,7 @@ type TFACon interface {
 	BuildUpdatedList(ids []string, concurrent bool) common.GeneralUpdatedList
 	UpdateAll(common.GeneralUpdatedList)
 	String() string
+	Validate() error
 }
 
 func Run(viperRun, viperConfig *viper.Viper) {

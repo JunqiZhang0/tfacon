@@ -3,6 +3,7 @@ package connectors
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -10,6 +11,7 @@ import (
 	"reflect"
 
 	"github.com/JunqiZhang0/tfacon/common"
+	"github.com/pkg/errors"
 
 	"github.com/tidwall/gjson"
 )
@@ -44,6 +46,10 @@ type RPConnector struct {
 	RPURL       string `mapstructure:"PLATFORM_URL"`
 	Client      *http.Client
 	TFAURL      string `mapstructure:"TFA_URL"`
+}
+
+func (c *RPConnector) Validate() error {
+	return errors.New("")
 }
 
 func (c RPConnector) String() string {

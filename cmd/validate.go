@@ -16,9 +16,9 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
-
+	"github.com/JunqiZhang0/tfacon/core"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // validateCmd represents the validate command
@@ -27,11 +27,20 @@ var validateCmd = &cobra.Command{
 	Short: "validate if the parameter is valid and if the urls are accesible",
 	Long:  `validate if the parameter is valid and if the urls are accesible`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("validate called")
+		con := core.GetInfo(viperValidate)
+		err := con.Validate()
+		if err == nil {
+			printGreen("Validation Passed!")
+		} else {
+			panic(err)
+		}
 	},
 }
 
+var viperValidate *viper.Viper
+
 func init() {
 	rootCmd.AddCommand(validateCmd)
-
+	viperValidate = viper.New()
+	initConfig(viperList, listCmd, cmdInfoList)
 }
