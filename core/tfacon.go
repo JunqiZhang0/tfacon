@@ -12,18 +12,28 @@ import (
 
 type TFACon interface {
 	GetAllTestIds() []string
-	BuildUpdatedList(ids []string) common.GeneralUpdatedList
+	BuildUpdatedList(ids []string, concurrent bool) common.GeneralUpdatedList
 	UpdateAll(common.GeneralUpdatedList)
 	String() string
 }
 
-func Run(viper *viper.Viper) {
-	var con TFACon = GetCon(viper)
+func Run(viperRun, viperConfig *viper.Viper) {
+	var con TFACon = GetCon(viperRun)
 	// fmt.Printf("%+v\n", con)
 	// fmt.Println("===========================")
-	ids := con.GetAllTestIds()
-	updated_list_of_issues := con.BuildUpdatedList(ids)
+	runHelper(viperRun, viperConfig, con.GetAllTestIds(), con)
+
+}
+
+func runHelper(viperRun, viperConfig *viper.Viper, ids []string, con TFACon) {
+	if len(ids) == 0 {
+		return
+	}
+	updated_list_of_issues := con.BuildUpdatedList(ids, viperConfig.GetBool("config.concurrency"))
+	// Doing this because the api can only take 20 items per request
+
 	con.UpdateAll(updated_list_of_issues)
+	runHelper(viperRun, viperConfig, con.GetAllTestIds(), con)
 }
 
 func GetInfo(viper *viper.Viper) TFACon {

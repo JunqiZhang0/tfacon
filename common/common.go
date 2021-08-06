@@ -18,5 +18,5 @@ type TFAInput struct {
 var DEFECT_TYPE map[string]string = map[string]string{
 	"AutomationBug": "ab001",
 	"ProductBug":    "pb001",
-	"SystemIssue":   "si001",
+	"SystemBug":     "si001",
 }

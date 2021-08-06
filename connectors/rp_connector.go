@@ -61,6 +61,7 @@ func (c *RPConnector) UpdateAll(updated_list_of_issues common.GeneralUpdatedList
 		return
 	}
 	json_updated_list_of_issues, _ := json.Marshal(updated_list_of_issues)
+	// fmt.Println(string(json_updated_list_of_issues))
 	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/api/v1/%s/item", c.RPURL, c.ProjectName), bytes.NewBuffer((json_updated_list_of_issues)))
 	if err != nil {
 		panic(fmt.Errorf("%s", err))
@@ -80,35 +81,50 @@ func (c *RPConnector) UpdateAll(updated_list_of_issues common.GeneralUpdatedList
 
 }
 
-func (c *RPConnector) BuildUpdatedList(ids []string) common.GeneralUpdatedList {
-	return UpdatedList{IssuesList: c.BuildIssues(ids)}
+func (c *RPConnector) BuildUpdatedList(ids []string, concurrent bool) common.GeneralUpdatedList {
+
+	return UpdatedList{IssuesList: c.BuildIssues(ids, concurrent)}
+
 }
 
-func (c *RPConnector) BuildIssues(ids []string) Issues {
+func (c *RPConnector) BuildIssues(ids []string, concurrent bool) Issues {
 	var issues Issues = Issues{}
-	var issuesChan chan Issues = make(chan Issues, len(ids))
-	for _, id := range ids {
-		// log.Printf("Getting prediction of test item(id): %s\n", id)
-		// logs := c.GetTestLog(id)
-		// // Make logs to string(in []byte format)
-		// log_after_marshal, _ := json.Marshal(logs)
-		// // This can be the input of GetPrediction
-		// var tfa_input common.TFAInput = c.BuildTFAInput(id, string(log_after_marshal))
-		// prediction_json := c.GetPrediction(id, tfa_input)
-		// prediction := gjson.Get(prediction_json, "result.prediction").String()
-		// prediction_code := common.DEFECT_TYPE[prediction]
-		// var issue_info IssueInfo = c.GetIssueInfoForSingleTestId(id)
-		// issue_info.IssueType = prediction_code
-		// var issue_item IssueItem = IssueItem{Issue: issue_info, TestItemId: id}
+	if concurrent {
+		return c.BuildIssuesConcurrent(ids)
+	} else {
+		for _, id := range ids {
+			issues = append(issues, c.BuildIssueItemHelper(id))
+			log.Printf("Getting prediction of test item(id): %s\n", id)
+		}
+		return issues
+	}
+}
 
-		var issue_item IssueItem = c.BuildIssueItem(id)
-		issues = append(issues, issue_item)
+func (c *RPConnector) BuildIssuesConcurrent(ids []string) Issues {
+	var issues Issues = Issues{}
+	var issuesChan chan IssueItem = make(chan IssueItem, len(ids))
+	var idsChan chan string = make(chan string, len(ids))
+	var exitChan chan bool = make(chan bool, len(ids))
+	go func() {
+		for _, id := range ids {
+			idsChan <- id
+		}
+		close(idsChan)
+	}()
+	for i := 0; i < len(ids); i++ {
+		go c.BuildIssueItemConcurrent(issuesChan, idsChan, exitChan)
+	}
+	for i := 0; i < len(ids); i++ {
+		<-exitChan
+	}
+	close(issuesChan)
+	for issue := range issuesChan {
+		issues = append(issues, issue)
 	}
 	return issues
 }
 
-func (c *RPConnector) BuildIssueItem(id string) IssueItem {
-	log.Printf("Getting prediction of test item(id): %s\n", id)
+func (c *RPConnector) BuildIssueItemHelper(id string) IssueItem {
 	logs := c.GetTestLog(id)
 	// Make logs to string(in []byte format)
 	log_after_marshal, _ := json.Marshal(logs)
@@ -121,6 +137,19 @@ func (c *RPConnector) BuildIssueItem(id string) IssueItem {
 	issue_info.IssueType = prediction_code
 	var issue_item IssueItem = IssueItem{Issue: issue_info, TestItemId: id}
 	return issue_item
+}
+
+func (c *RPConnector) BuildIssueItemConcurrent(issuesChan chan<- IssueItem, idsChan <-chan string, exitChan chan<- bool) {
+	for {
+		id, ok := <-idsChan
+		if !ok {
+			break
+		}
+
+		issuesChan <- c.BuildIssueItemHelper(id)
+		log.Printf("Getting prediction of test item(id): %s\n", id)
+	}
+	exitChan <- true
 }
 
 func (c *RPConnector) GetIssueInfoForSingleTestId(id string) IssueInfo {
