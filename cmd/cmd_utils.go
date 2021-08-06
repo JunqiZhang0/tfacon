@@ -1,8 +1,11 @@
 package cmd
 
 import (
+	"bytes"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"os"
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
@@ -46,7 +49,6 @@ var cmdInfoList []map[string]string = []map[string]string{
 		"defaultVal":     "",
 		"cmdDescription": "The AUTH_TOKEN of report portal",
 	},
-	// Client      *http.Client
 }
 
 func initConfig(viper *viper.Viper, cmd *cobra.Command, cmdInfoList []map[string]string) {
@@ -59,8 +61,6 @@ func initConfig(viper *viper.Viper, cmd *cobra.Command, cmdInfoList []map[string
 
 		initViperVal(cmd, viper, v["cmdName"], v["valName"], v["defaultVal"], v["cmdDescription"])
 	}
-	//initViperVal(cmd, viper0, "tfa-url", "TFAURL", "default val for tfa url", "The url to the TFA Classifier")
-	//initViperVal(cmd, viper0, "platform-url", "PLATFORMURL", "default val for platform url", "The url to the test platform")
 	viper.ReadInConfig()
 }
 
@@ -85,4 +85,20 @@ func printHeader() {
 	fmt.Println("Copyright (C) 2021, Red Hat, Inc.")
 	fmt.Print("-------------------------------------------------\n\n\n")
 	log.Println("Printing the constructed information")
+}
+
+func initTFAConfigFile(viper *viper.Viper) {
+	var file []byte
+	var err error
+	if os.Getenv("TFACON_CONFIG_PATH") != "" {
+		file, err = ioutil.ReadFile(os.Getenv("TFACON_CONFIG_PATH"))
+	} else {
+		file, err = ioutil.ReadFile("./tfacon.cfg")
+	}
+
+	if err != nil {
+		panic(err)
+	}
+	viper.SetConfigType("ini")
+	viper.ReadConfig(bytes.NewBuffer(file))
 }

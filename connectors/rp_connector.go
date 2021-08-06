@@ -86,22 +86,41 @@ func (c *RPConnector) BuildUpdatedList(ids []string) common.GeneralUpdatedList {
 
 func (c *RPConnector) BuildIssues(ids []string) Issues {
 	var issues Issues = Issues{}
+	var issuesChan chan Issues = make(chan Issues, len(ids))
 	for _, id := range ids {
-		log.Printf("Getting prediction of test item(id): %s\n", id)
-		logs := c.GetTestLog(id)
-		// Make logs to string(in []byte format)
-		log_after_marshal, _ := json.Marshal(logs)
-		// This can be the input of GetPrediction
-		var tfa_input common.TFAInput = c.BuildTFAInput(id, string(log_after_marshal))
-		prediction_json := c.GetPrediction(id, tfa_input)
-		prediction := gjson.Get(prediction_json, "result.prediction").String()
-		prediction_code := common.DEFECT_TYPE[prediction]
-		var issue_info IssueInfo = c.GetIssueInfoForSingleTestId(id)
-		issue_info.IssueType = prediction_code
-		var issue_item IssueItem = IssueItem{Issue: issue_info, TestItemId: id}
+		// log.Printf("Getting prediction of test item(id): %s\n", id)
+		// logs := c.GetTestLog(id)
+		// // Make logs to string(in []byte format)
+		// log_after_marshal, _ := json.Marshal(logs)
+		// // This can be the input of GetPrediction
+		// var tfa_input common.TFAInput = c.BuildTFAInput(id, string(log_after_marshal))
+		// prediction_json := c.GetPrediction(id, tfa_input)
+		// prediction := gjson.Get(prediction_json, "result.prediction").String()
+		// prediction_code := common.DEFECT_TYPE[prediction]
+		// var issue_info IssueInfo = c.GetIssueInfoForSingleTestId(id)
+		// issue_info.IssueType = prediction_code
+		// var issue_item IssueItem = IssueItem{Issue: issue_info, TestItemId: id}
+
+		var issue_item IssueItem = c.BuildIssueItem(id)
 		issues = append(issues, issue_item)
 	}
 	return issues
+}
+
+func (c *RPConnector) BuildIssueItem(id string) IssueItem {
+	log.Printf("Getting prediction of test item(id): %s\n", id)
+	logs := c.GetTestLog(id)
+	// Make logs to string(in []byte format)
+	log_after_marshal, _ := json.Marshal(logs)
+	// This can be the input of GetPrediction
+	var tfa_input common.TFAInput = c.BuildTFAInput(id, string(log_after_marshal))
+	prediction_json := c.GetPrediction(id, tfa_input)
+	prediction := gjson.Get(prediction_json, "result.prediction").String()
+	prediction_code := common.DEFECT_TYPE[prediction]
+	var issue_info IssueInfo = c.GetIssueInfoForSingleTestId(id)
+	issue_info.IssueType = prediction_code
+	var issue_item IssueItem = IssueItem{Issue: issue_info, TestItemId: id}
+	return issue_item
 }
 
 func (c *RPConnector) GetIssueInfoForSingleTestId(id string) IssueInfo {

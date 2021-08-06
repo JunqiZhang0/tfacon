@@ -20,6 +20,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -27,11 +28,14 @@ var rootCmd = &cobra.Command{
 	Use:   "tfacon",
 	Short: "A connector tool to connect testing platform and TFA Classifier",
 	Long:  `A connector tool to connect testing platform and TFA Classifier`,
+	Args:  cobra.MinimumNArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) == 0 {
 			cmd.Help()
 			os.Exit(0)
 		}
+		// fmt.Println(args[0])
+		// fmt.Println(mid)
 	},
 	Version: "0.0.1",
 }
@@ -43,4 +47,13 @@ func Execute() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+}
+
+var viperConfig *viper.Viper
+var cfg map[string]map[string]string
+
+func init() {
+	viperConfig = viper.New()
+	initTFAConfigFile(viperConfig)
+	viperConfig.Unmarshal(&cfg)
 }
