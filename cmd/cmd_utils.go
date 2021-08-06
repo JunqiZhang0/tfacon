@@ -97,7 +97,7 @@ func initTFAConfigFile(viper *viper.Viper) {
 	}
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Println(r)
+			os.Create("tfacon.cfg")
 		}
 	}()
 	if err != nil {
