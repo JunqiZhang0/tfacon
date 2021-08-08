@@ -15,16 +15,16 @@ type TFAInput struct {
 	Messages string `json:"messages"`
 }
 
+var TFA_DEFECT_TYPE_TO_SUB_TYPE map[string]PREDICTED_SUB_TYPE = map[string]PREDICTED_SUB_TYPE{
+	"AutomationBug": PREDICTED_AUTOMATION_BUG,
+	"ProductBug":    PREDICTED_PRODUCT_BUG,
+	"SystemBug":     PREDICTED_SYSTEM_BUG,
+}
+
 var DEFECT_TYPE map[string]string = map[string]string{
 	"AutomationBug": "ab001",
 	"ProductBug":    "pb001",
 	"SystemBug":     "si001",
-}
-
-var DEFECT_TYPE_TEST map[string]string = map[string]string{
-	"AutomationBug": "",
-	"ProductBug":    "",
-	"SystemBug":     "",
 }
 
 type PREDICTED_SUB_TYPE map[string]string

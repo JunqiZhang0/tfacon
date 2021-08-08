@@ -15,6 +15,7 @@ type TFACon interface {
 	BuildUpdatedList(ids []string, concurrent bool) common.GeneralUpdatedList
 	UpdateAll(common.GeneralUpdatedList)
 	String() string
+	InitConnector()
 	Validate() error
 }
 
@@ -22,6 +23,7 @@ func Run(viperRun, viperConfig *viper.Viper) {
 	var con TFACon = GetCon(viperRun)
 	// fmt.Printf("%+v\n", con)
 	// fmt.Println("===========================")
+	con.InitConnector()
 	runHelper(viperRun, viperConfig, con.GetAllTestIds(), con)
 
 }

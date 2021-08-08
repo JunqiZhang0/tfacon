@@ -67,7 +67,7 @@ func (c *RPConnector) UpdateAll(updated_list_of_issues common.GeneralUpdatedList
 		return
 	}
 	json_updated_list_of_issues, _ := json.Marshal(updated_list_of_issues)
-	// fmt.Println(string(json_updated_list_of_issues))
+	fmt.Println(string(json_updated_list_of_issues))
 	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/api/v1/%s/item", c.RPURL, c.ProjectName), bytes.NewBuffer((json_updated_list_of_issues)))
 	if err != nil {
 		panic(fmt.Errorf("%s", err))
@@ -138,7 +138,9 @@ func (c *RPConnector) BuildIssueItemHelper(id string) IssueItem {
 	var tfa_input common.TFAInput = c.BuildTFAInput(id, string(log_after_marshal))
 	prediction_json := c.GetPrediction(id, tfa_input)
 	prediction := gjson.Get(prediction_json, "result.prediction").String()
-	prediction_code := common.DEFECT_TYPE[prediction]
+	// prediction_code := common.DEFECT_TYPE[prediction]
+	prediction_code := common.TFA_DEFECT_TYPE_TO_SUB_TYPE[prediction]["locator"]
+	// fmt.Println(prediction_code)
 	var issue_info IssueInfo = c.GetIssueInfoForSingleTestId(id)
 	issue_info.IssueType = prediction_code
 	var issue_item IssueItem = IssueItem{Issue: issue_info, TestItemId: id}
@@ -243,4 +245,52 @@ func (c *RPConnector) GetTestLog(test_id string) []string {
 		return true
 	})
 	return ret
+}
+
+func getExistingDefectTypeLocatorId(gjson_obj []gjson.Result, defect_type string) (string, bool) {
+	for _, v := range gjson_obj {
+		defect_type_info := v.Map()
+		if defect_type_info["longName"].String() == defect_type {
+			return defect_type_info["locator"].String(), true
+		}
+	}
+	return "", false
+}
+
+func (c *RPConnector) InitConnector() {
+	fmt.Println("Initializing defect types...")
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/v1/%s/settings", c.RPURL, c.ProjectName), nil)
+	req.Header.Add("Authorization", fmt.Sprintf("bearer %s", c.AuthToken))
+	if err != nil {
+		panic(err)
+	}
+	req.Header.Add("Content-Type", "application/json")
+	resp, _ := c.Client.Do(req)
+	d, _ := ioutil.ReadAll(resp.Body)
+	ti_sub := gjson.Get(string(d), "subTypes.TO_INVESTIGATE").Array()
+
+	for _, v := range common.PREDICTED_SUB_TYPES {
+		locator, ok := getExistingDefectTypeLocatorId(ti_sub, v["longName"])
+		if !ok {
+			d, _ := json.Marshal(v)
+			req, err := http.NewRequest("POST", fmt.Sprintf("%s/api/v1/%s/settings/sub-type", c.RPURL, c.ProjectName), bytes.NewBuffer(d))
+			req.Header.Add("Authorization", fmt.Sprintf("bearer %s", c.AuthToken))
+			if err != nil {
+				panic(err)
+			}
+			req.Header.Add("Content-Type", "application/json")
+			resp, err := c.Client.Do(req)
+			if err != nil {
+				panic(fmt.Errorf("request to get test ids failed: %s", err))
+			}
+			data, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				panic(fmt.Errorf("read response body failed: %v", err))
+			}
+			v["locator"] = gjson.Get(string(data), "locator").String()
+		} else {
+			v["locator"] = locator
+		}
+	}
+	// fmt.Println(PREDICTED_SUB_TYPES)
 }

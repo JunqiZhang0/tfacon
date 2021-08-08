@@ -19,7 +19,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/JunqiZhang0/tfacon/common"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -57,5 +56,5 @@ func init() {
 	viperConfig = viper.New()
 	initTFAConfigFile(viperConfig)
 	viperConfig.Unmarshal(&cfg)
-	common.InitDefectTypes()
+	// common.InitDefectTypes()
 }
