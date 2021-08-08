@@ -49,6 +49,7 @@ Flags:
 
 Output Example:
 ```bash
+❯ tfacon list
 --------------------------------------------------
 tfacon  0.0.1
 Copyright (C) 2021, Red Hat, Inc.
@@ -83,7 +84,7 @@ Flags:
 
 Eample Output
 ```bash
-❯ ./tfacon run --project-name "project_name" --launch-id 1006
+❯ tfacon run --project-name "project_name" --launch-id 1006
 
 2021/08/06 03:46:59 Getting prediction of test item(id): 54799
 2021/08/06 03:46:59 Getting prediction of test item(id): 54900

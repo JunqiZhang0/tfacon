@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"reflect"
@@ -67,21 +66,35 @@ func (c *RPConnector) UpdateAll(updated_list_of_issues common.GeneralUpdatedList
 		return
 	}
 	json_updated_list_of_issues, _ := json.Marshal(updated_list_of_issues)
-	fmt.Println(string(json_updated_list_of_issues))
-	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/api/v1/%s/item", c.RPURL, c.ProjectName), bytes.NewBuffer((json_updated_list_of_issues)))
+	// fmt.Println(string(json_updated_list_of_issues))
+	// req, err := http.NewRequest("PUT", fmt.Sprintf("%s/api/v1/%s/item", c.RPURL, c.ProjectName), bytes.NewBuffer((json_updated_list_of_issues)))
+	// if err != nil {
+	// 	panic(fmt.Errorf("%s", err))
+	// }
+	// req.Header.Add("Accept", "application/json")
+	// req.Header.Add("Content-Type", "application/json")
+	// req.Header.Add("Authorization", fmt.Sprintf("bearer %s", c.AuthToken))
+	// resp, err := c.Client.Do(req)
+	// if err != nil {
+	// 	panic(fmt.Errorf("update all failed in sending request: %v", err))
+	// }
+	// data, err := ioutil.ReadAll(resp.Body)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	log.Println("Updating All Test Items With Predictions...")
+	url := fmt.Sprintf("%s/api/v1/%s/item", c.RPURL, c.ProjectName)
+	method := "PUT"
+	auth_token := c.AuthToken
+	body := bytes.NewBuffer(json_updated_list_of_issues)
+	data, err, success := common.SendHTTPRequest(method, url, auth_token, body, c.Client)
 	if err != nil {
-		panic(fmt.Errorf("%s", err))
+		panic(fmt.Sprintf("Updated All failed: %s", err))
 	}
-	req.Header.Add("Accept", "application/json")
-	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("Authorization", fmt.Sprintf("bearer %s", c.AuthToken))
-	resp, err := c.Client.Do(req)
-	if err != nil {
-		panic(fmt.Errorf("update all failed in sending request: %v", err))
-	}
-	data, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		panic(err)
+	if success {
+		fmt.Println("Updated All Test Items Successfully!")
+	} else {
+		fmt.Println("Updated Failed!")
 	}
 	fmt.Printf("This is the return info from update: %v\n", string(data))
 
@@ -161,20 +174,28 @@ func (c *RPConnector) BuildIssueItemConcurrent(issuesChan chan<- IssueItem, idsC
 }
 
 func (c *RPConnector) GetIssueInfoForSingleTestId(id string) IssueInfo {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/v1/%s/item?filter.eq.id=%s&filter.eq.launchId=%s&isLatest=false&launchesLimit=0", c.RPURL, c.ProjectName, id, c.LaunchId), nil)
-	if err != nil {
-		panic(fmt.Errorf("%s", err))
-	}
-	req.Header.Add("Accept", "application/json")
-	req.Header.Add("Authorization", fmt.Sprintf("bearer %s", c.AuthToken))
-	if err != nil {
-		panic(fmt.Errorf("request to get test ids failed: %s", err))
-	}
-	resp, err := c.Client.Do(req)
+	// req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/v1/%s/item?filter.eq.id=%s&filter.eq.launchId=%s&isLatest=false&launchesLimit=0", c.RPURL, c.ProjectName, id, c.LaunchId), nil)
+	// if err != nil {
+	// 	panic(fmt.Errorf("%s", err))
+	// }
+	// req.Header.Add("Accept", "application/json")
+	// req.Header.Add("Authorization", fmt.Sprintf("bearer %s", c.AuthToken))
+	// if err != nil {
+	// 	panic(fmt.Errorf("request to get test ids failed: %s", err))
+	// }
+	// resp, err := c.Client.Do(req)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// data, _ := ioutil.ReadAll(resp.Body)
+	url := fmt.Sprintf("%s/api/v1/%s/item?filter.eq.id=%s&filter.eq.launchId=%s&isLatest=false&launchesLimit=0", c.RPURL, c.ProjectName, id, c.LaunchId)
+	method := "GET"
+	auth_token := c.AuthToken
+	body := bytes.NewBuffer(nil)
+	data, err, _ := common.SendHTTPRequest(method, url, auth_token, body, c.Client)
 	if err != nil {
 		panic(err)
 	}
-	data, _ := ioutil.ReadAll(resp.Body)
 	issue_info_str := gjson.Get(string(data), "content.0.issue").String()
 	var issue_info IssueInfo
 	json.Unmarshal([]byte(issue_info_str), &issue_info)
@@ -188,18 +209,26 @@ func (c *RPConnector) GetPrediction(id string, tfa_input common.TFAInput) string
 	if err != nil {
 		panic(fmt.Errorf("%s", err))
 	}
-	req, err := http.NewRequest("POST", c.TFAURL, bytes.NewBuffer(model))
+	// req, err := http.NewRequest("POST", c.TFAURL, bytes.NewBuffer(model))
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// req.Header.Add("Content-Type", "application/json")
+	// resp, err := c.Client.Do(req)
+	// if err != nil {
+	// 	panic(fmt.Errorf("request to get test ids failed: %s", err))
+	// }
+	// data, err := ioutil.ReadAll(resp.Body)
+	// if err != nil {
+	// 	panic(fmt.Errorf("read response body failed: %v", err))
+	// }
+	url := c.TFAURL
+	method := "POST"
+	auth_token := c.AuthToken
+	body := bytes.NewBuffer(model)
+	data, err, _ := common.SendHTTPRequest(method, url, auth_token, body, c.Client)
 	if err != nil {
 		panic(err)
-	}
-	req.Header.Add("Content-Type", "application/json")
-	resp, err := c.Client.Do(req)
-	if err != nil {
-		panic(fmt.Errorf("request to get test ids failed: %s", err))
-	}
-	data, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		panic(fmt.Errorf("read response body failed: %v", err))
 	}
 	return string(data)
 }
@@ -209,17 +238,25 @@ func (c *RPConnector) BuildTFAInput(test_id, messages string) common.TFAInput {
 }
 
 func (c *RPConnector) GetAllTestIds() []string {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/v1/%s/item?filter.eq.issueType=ti001&filter.eq.launchId=%s&filter.eq.status=FAILED&isLatest=false&launchesLimit=0", c.RPURL, c.ProjectName, c.LaunchId), nil)
+	// req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/v1/%s/item?filter.eq.issueType=ti001&filter.eq.launchId=%s&filter.eq.status=FAILED&isLatest=false&launchesLimit=0", c.RPURL, c.ProjectName, c.LaunchId), nil)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// req.Header.Add("Accept", "application/json")
+	// req.Header.Add("Authorization", fmt.Sprintf("bearer %s", c.AuthToken))
+	// resp, err := c.Client.Do(req)
+	// if err != nil {
+	// 	panic(fmt.Errorf("request to get test ids failed: %s", err))
+	// }
+	// data, _ := ioutil.ReadAll(resp.Body)
+	url := fmt.Sprintf("%s/api/v1/%s/item?filter.eq.issueType=ti001&filter.eq.launchId=%s&filter.eq.status=FAILED&isLatest=false&launchesLimit=0", c.RPURL, c.ProjectName, c.LaunchId)
+	method := "GET"
+	auth_token := c.AuthToken
+	body := bytes.NewBuffer(nil)
+	data, err, _ := common.SendHTTPRequest(method, url, auth_token, body, c.Client)
 	if err != nil {
 		panic(err)
 	}
-	req.Header.Add("Accept", "application/json")
-	req.Header.Add("Authorization", fmt.Sprintf("bearer %s", c.AuthToken))
-	resp, err := c.Client.Do(req)
-	if err != nil {
-		panic(fmt.Errorf("request to get test ids failed: %s", err))
-	}
-	data, _ := ioutil.ReadAll(resp.Body)
 	a := gjson.Get(string(data), "content")
 	var ret []string
 	a.ForEach(func(_, m gjson.Result) bool {
@@ -230,14 +267,22 @@ func (c *RPConnector) GetAllTestIds() []string {
 }
 
 func (c *RPConnector) GetTestLog(test_id string) []string {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/v1/%s/log?filter.eq.item=%s&filter.eq.launchId=%s", c.RPURL, c.ProjectName, test_id, c.LaunchId), nil)
-	req.Header.Add("Accept", "application/json")
-	req.Header.Add("Authorization", fmt.Sprintf("bearer %s", c.AuthToken))
+	// req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/v1/%s/log?filter.eq.item=%s&filter.eq.launchId=%s", c.RPURL, c.ProjectName, test_id, c.LaunchId), nil)
+	// req.Header.Add("Accept", "application/json")
+	// req.Header.Add("Authorization", fmt.Sprintf("bearer %s", c.AuthToken))
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// resp, _ := c.Client.Do(req)
+	// data, _ := ioutil.ReadAll(resp.Body)
+	url := fmt.Sprintf("%s/api/v1/%s/log?filter.eq.item=%s&filter.eq.launchId=%s", c.RPURL, c.ProjectName, test_id, c.LaunchId)
+	method := "GET"
+	auth_token := c.AuthToken
+	body := bytes.NewBuffer(nil)
+	data, err, _ := common.SendHTTPRequest(method, url, auth_token, body, c.Client)
 	if err != nil {
 		panic(err)
 	}
-	resp, _ := c.Client.Do(req)
-	data, _ := ioutil.ReadAll(resp.Body)
 	a := gjson.Get(string(data), "content")
 	var ret []string
 	a.ForEach(func(_, m gjson.Result) bool {
@@ -259,31 +304,45 @@ func getExistingDefectTypeLocatorId(gjson_obj []gjson.Result, defect_type string
 
 func (c *RPConnector) InitConnector() {
 	fmt.Println("Initializing defect types...")
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/v1/%s/settings", c.RPURL, c.ProjectName), nil)
-	req.Header.Add("Authorization", fmt.Sprintf("bearer %s", c.AuthToken))
+	// req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/v1/%s/settings", c.RPURL, c.ProjectName), nil)
+	// req.Header.Add("Authorization", fmt.Sprintf("bearer %s", c.AuthToken))
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// req.Header.Add("Content-Type", "application/json")
+	// resp, _ := c.Client.Do(req)
+	// d, _ := ioutil.ReadAll(resp.Body)
+	url := fmt.Sprintf("%s/api/v1/%s/settings", c.RPURL, c.ProjectName)
+	method := "GET"
+	auth_token := c.AuthToken
+	body := bytes.NewBuffer(nil)
+	data, err, _ := common.SendHTTPRequest(method, url, auth_token, body, c.Client)
 	if err != nil {
 		panic(err)
 	}
-	req.Header.Add("Content-Type", "application/json")
-	resp, _ := c.Client.Do(req)
-	d, _ := ioutil.ReadAll(resp.Body)
-	ti_sub := gjson.Get(string(d), "subTypes.TO_INVESTIGATE").Array()
+	ti_sub := gjson.Get(string(data), "subTypes.TO_INVESTIGATE").Array()
 
 	for _, v := range common.PREDICTED_SUB_TYPES {
 		locator, ok := getExistingDefectTypeLocatorId(ti_sub, v["longName"])
 		if !ok {
 			d, _ := json.Marshal(v)
-			req, err := http.NewRequest("POST", fmt.Sprintf("%s/api/v1/%s/settings/sub-type", c.RPURL, c.ProjectName), bytes.NewBuffer(d))
-			req.Header.Add("Authorization", fmt.Sprintf("bearer %s", c.AuthToken))
-			if err != nil {
-				panic(err)
-			}
-			req.Header.Add("Content-Type", "application/json")
-			resp, err := c.Client.Do(req)
-			if err != nil {
-				panic(fmt.Errorf("request to get test ids failed: %s", err))
-			}
-			data, err := ioutil.ReadAll(resp.Body)
+			// req, err := http.NewRequest("POST", fmt.Sprintf("%s/api/v1/%s/settings/sub-type", c.RPURL, c.ProjectName), bytes.NewBuffer(d))
+			// req.Header.Add("Authorization", fmt.Sprintf("bearer %s", c.AuthToken))
+			// if err != nil {
+			// 	panic(err)
+			// }
+			// req.Header.Add("Content-Type", "application/json")
+			// resp, err := c.Client.Do(req)
+			// if err != nil {
+			// 	panic(fmt.Errorf("request to get test ids failed: %s", err))
+			// }
+			// data, err := ioutil.ReadAll(resp.Body)
+			url := fmt.Sprintf("%s/api/v1/%s/settings/sub-type", c.RPURL, c.ProjectName)
+			method := "POST"
+			auth_token := c.AuthToken
+			body := bytes.NewBuffer(d)
+			data, err, _ := common.SendHTTPRequest(method, url, auth_token, body, c.Client)
+
 			if err != nil {
 				panic(fmt.Errorf("read response body failed: %v", err))
 			}

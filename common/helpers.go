@@ -7,28 +7,25 @@ import (
 	"net/http"
 )
 
-type HTTPHandler struct {
-	Client     *http.Client
-	Method     string
-	URL        string
-	AUTH_TOKEN string
-	Body       *bytes.Buffer
-}
-
-func (h *HTTPHandler) Do() []byte {
-	req, err := http.NewRequest(h.Method, h.URL, h.Body)
-	req.Header.Add("Authorization", fmt.Sprintf("bearer %s", h.AUTH_TOKEN))
+func SendHTTPRequest(method, url, auth_token string, body *bytes.Buffer, client *http.Client) ([]byte, error, bool) {
+	req, err := http.NewRequest(method, url, body)
+	req.Header.Add("Authorization", fmt.Sprintf("bearer %s", auth_token))
 	if err != nil {
-		panic(err)
+		return nil, err, false
 	}
 	req.Header.Add("Content-Type", "application/json")
-	resp, err := h.Client.Do(req)
+	req.Header.Add("Accept", "application/json")
+	resp, err := client.Do(req)
 	if err != nil {
-		panic(err)
+		return nil, err, false
 	}
 	d, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		panic(err)
+		return nil, err, false
 	}
-	return d
+	if resp.StatusCode == 200 {
+		return d, err, true
+	} else {
+		return d, err, false
+	}
 }

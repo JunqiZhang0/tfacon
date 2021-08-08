@@ -21,11 +21,11 @@ var TFA_DEFECT_TYPE_TO_SUB_TYPE map[string]PREDICTED_SUB_TYPE = map[string]PREDI
 	"SystemBug":     PREDICTED_SYSTEM_BUG,
 }
 
-var DEFECT_TYPE map[string]string = map[string]string{
-	"AutomationBug": "ab001",
-	"ProductBug":    "pb001",
-	"SystemBug":     "si001",
-}
+// var DEFECT_TYPE map[string]string = map[string]string{
+// 	"AutomationBug": "ab001",
+// 	"ProductBug":    "pb001",
+// 	"SystemBug":     "si001",
+// }
 
 type PREDICTED_SUB_TYPE map[string]string
 
