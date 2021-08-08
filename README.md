@@ -3,6 +3,8 @@
 ## Description
 __tfacon__ is a CLI tool for connecting Test Management Platforms and __Test Failure Analysis Classifier__. __Test Failure Analysis Classifier__ is
 an AI/ML predictioner developed by *Red Hat D&O Data Science Team* which can predict the test's catalog. It supports __AutomationBug, ProductBug, SystemBug__ on Report Portal now. tfacon only support report portal at this moment. We will support more platforms in the future.
+
+
 ## User Guide
 ### Installation
 ##### Via go get
@@ -14,6 +16,19 @@ go get -u github.com/JunqiZhang0/tfacon
 pip install "git+https://github.com/JunqiZhang0/tfacon.git@develop#egg=tfacon&subdirectory=pip_package"
 ```
 ### Get Started
+
+#### tfacon.yml
+This is where you store all parameters like this
+```yaml
+launch_id: "your launch_id goes here"
+project_name: "your project name goes here"
+auth_token: "xxxxx-xxxx-xxxxx-xxxx-xxxxx"
+platform_url: "https://reportportal.com"
+tfa_url: "https://dave.corp.redhat.com:443/"
+connector_type: "RPCon"
+```
+The default name is tfacon.yml, you can't change the name of this for this moment, we will add this feature later
+
 #### list
 ```bash
 ❯ tfacon list -h
@@ -83,6 +98,8 @@ This is the return info from update: [{"issueType":"ab001","comment":"","autoAna
 ```
 #### validate
 #### init(To be added)
+
+
 ### Advanced Config
 __You can set up advanced config in ./tfacon.cfg by default or you can define the location of the config file with TFACON_CONFIG_PATH environment variable__
 
@@ -100,10 +117,9 @@ __You can set this to True or False, if you set it to True tfacon will deal with
 ## Developer Guide
 ### Archietrcue
 #### UML graph
-![uml](doc/image/tfacon_uml.svg)
-#### OOD brief explanation
-### concurrency
+![uml](docs/image/tfacon_uml.svg)
 
 ## Contributor Guide
 ### Branch name
-
+__*develop*__ is the development branch
+__*master*__ is the stable branch
