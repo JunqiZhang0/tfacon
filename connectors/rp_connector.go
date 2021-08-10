@@ -66,22 +66,6 @@ func (c *RPConnector) UpdateAll(updated_list_of_issues common.GeneralUpdatedList
 		return
 	}
 	json_updated_list_of_issues, _ := json.Marshal(updated_list_of_issues)
-	// fmt.Println(string(json_updated_list_of_issues))
-	// req, err := http.NewRequest("PUT", fmt.Sprintf("%s/api/v1/%s/item", c.RPURL, c.ProjectName), bytes.NewBuffer((json_updated_list_of_issues)))
-	// if err != nil {
-	// 	panic(fmt.Errorf("%s", err))
-	// }
-	// req.Header.Add("Accept", "application/json")
-	// req.Header.Add("Content-Type", "application/json")
-	// req.Header.Add("Authorization", fmt.Sprintf("bearer %s", c.AuthToken))
-	// resp, err := c.Client.Do(req)
-	// if err != nil {
-	// 	panic(fmt.Errorf("update all failed in sending request: %v", err))
-	// }
-	// data, err := ioutil.ReadAll(resp.Body)
-	// if err != nil {
-	// 	panic(err)
-	// }
 	log.Println("Updating All Test Items With Predictions...")
 	url := fmt.Sprintf("%s/api/v1/%s/item", c.RPURL, c.ProjectName)
 	method := "PUT"
@@ -100,26 +84,25 @@ func (c *RPConnector) UpdateAll(updated_list_of_issues common.GeneralUpdatedList
 
 }
 
-func (c *RPConnector) BuildUpdatedList(ids []string, concurrent bool) common.GeneralUpdatedList {
-
-	return UpdatedList{IssuesList: c.BuildIssues(ids, concurrent)}
+func (c *RPConnector) BuildUpdatedList(ids []string, concurrent bool, add_attributes bool) common.GeneralUpdatedList {
+	return UpdatedList{IssuesList: c.BuildIssues(ids, concurrent, add_attributes)}
 
 }
 
-func (c *RPConnector) BuildIssues(ids []string, concurrent bool) Issues {
+func (c *RPConnector) BuildIssues(ids []string, concurrent bool, add_attributes bool) Issues {
 	var issues Issues = Issues{}
 	if concurrent {
-		return c.BuildIssuesConcurrent(ids)
+		return c.BuildIssuesConcurrent(ids, add_attributes)
 	} else {
 		for _, id := range ids {
-			issues = append(issues, c.BuildIssueItemHelper(id))
+			issues = append(issues, c.BuildIssueItemHelper(id, add_attributes))
 			log.Printf("Getting prediction of test item(id): %s\n", id)
 		}
 		return issues
 	}
 }
 
-func (c *RPConnector) BuildIssuesConcurrent(ids []string) Issues {
+func (c *RPConnector) BuildIssuesConcurrent(ids []string, add_attributes bool) Issues {
 	var issues Issues = Issues{}
 	var issuesChan chan IssueItem = make(chan IssueItem, len(ids))
 	var idsChan chan string = make(chan string, len(ids))
@@ -131,7 +114,7 @@ func (c *RPConnector) BuildIssuesConcurrent(ids []string) Issues {
 		close(idsChan)
 	}()
 	for i := 0; i < len(ids); i++ {
-		go c.BuildIssueItemConcurrent(issuesChan, idsChan, exitChan)
+		go c.BuildIssueItemConcurrent(issuesChan, idsChan, exitChan, add_attributes)
 	}
 	for i := 0; i < len(ids); i++ {
 		<-exitChan
@@ -143,7 +126,7 @@ func (c *RPConnector) BuildIssuesConcurrent(ids []string) Issues {
 	return issues
 }
 
-func (c *RPConnector) BuildIssueItemHelper(id string) IssueItem {
+func (c *RPConnector) BuildIssueItemHelper(id string, add_attributes bool) IssueItem {
 	logs := c.GetTestLog(id)
 	// Make logs to string(in []byte format)
 	log_after_marshal, _ := json.Marshal(logs)
@@ -157,37 +140,30 @@ func (c *RPConnector) BuildIssueItemHelper(id string) IssueItem {
 	var issue_info IssueInfo = c.GetIssueInfoForSingleTestId(id)
 	issue_info.IssueType = prediction_code
 	var issue_item IssueItem = IssueItem{Issue: issue_info, TestItemId: id}
+	if add_attributes {
+		prediction_name := common.TFA_DEFECT_TYPE_TO_SUB_TYPE[prediction]["longName"]
+		err := c.updateAttributesForPrediction(id, prediction_name)
+		if err != nil {
+			panic(err)
+		}
+	}
 	return issue_item
 }
 
-func (c *RPConnector) BuildIssueItemConcurrent(issuesChan chan<- IssueItem, idsChan <-chan string, exitChan chan<- bool) {
+func (c *RPConnector) BuildIssueItemConcurrent(issuesChan chan<- IssueItem, idsChan <-chan string, exitChan chan<- bool, add_attributes bool) {
 	for {
 		id, ok := <-idsChan
 		if !ok {
 			break
 		}
 
-		issuesChan <- c.BuildIssueItemHelper(id)
+		issuesChan <- c.BuildIssueItemHelper(id, add_attributes)
 		log.Printf("Getting prediction of test item(id): %s\n", id)
 	}
 	exitChan <- true
 }
 
 func (c *RPConnector) GetIssueInfoForSingleTestId(id string) IssueInfo {
-	// req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/v1/%s/item?filter.eq.id=%s&filter.eq.launchId=%s&isLatest=false&launchesLimit=0", c.RPURL, c.ProjectName, id, c.LaunchId), nil)
-	// if err != nil {
-	// 	panic(fmt.Errorf("%s", err))
-	// }
-	// req.Header.Add("Accept", "application/json")
-	// req.Header.Add("Authorization", fmt.Sprintf("bearer %s", c.AuthToken))
-	// if err != nil {
-	// 	panic(fmt.Errorf("request to get test ids failed: %s", err))
-	// }
-	// resp, err := c.Client.Do(req)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// data, _ := ioutil.ReadAll(resp.Body)
 	url := fmt.Sprintf("%s/api/v1/%s/item?filter.eq.id=%s&filter.eq.launchId=%s&isLatest=false&launchesLimit=0", c.RPURL, c.ProjectName, id, c.LaunchId)
 	method := "GET"
 	auth_token := c.AuthToken
@@ -209,19 +185,6 @@ func (c *RPConnector) GetPrediction(id string, tfa_input common.TFAInput) string
 	if err != nil {
 		panic(fmt.Errorf("%s", err))
 	}
-	// req, err := http.NewRequest("POST", c.TFAURL, bytes.NewBuffer(model))
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// req.Header.Add("Content-Type", "application/json")
-	// resp, err := c.Client.Do(req)
-	// if err != nil {
-	// 	panic(fmt.Errorf("request to get test ids failed: %s", err))
-	// }
-	// data, err := ioutil.ReadAll(resp.Body)
-	// if err != nil {
-	// 	panic(fmt.Errorf("read response body failed: %v", err))
-	// }
 	url := c.TFAURL
 	method := "POST"
 	auth_token := c.AuthToken
@@ -238,17 +201,6 @@ func (c *RPConnector) BuildTFAInput(test_id, messages string) common.TFAInput {
 }
 
 func (c *RPConnector) GetAllTestIds() []string {
-	// req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/v1/%s/item?filter.eq.issueType=ti001&filter.eq.launchId=%s&filter.eq.status=FAILED&isLatest=false&launchesLimit=0", c.RPURL, c.ProjectName, c.LaunchId), nil)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// req.Header.Add("Accept", "application/json")
-	// req.Header.Add("Authorization", fmt.Sprintf("bearer %s", c.AuthToken))
-	// resp, err := c.Client.Do(req)
-	// if err != nil {
-	// 	panic(fmt.Errorf("request to get test ids failed: %s", err))
-	// }
-	// data, _ := ioutil.ReadAll(resp.Body)
 	url := fmt.Sprintf("%s/api/v1/%s/item?filter.eq.issueType=ti001&filter.eq.launchId=%s&filter.eq.status=FAILED&isLatest=false&launchesLimit=0", c.RPURL, c.ProjectName, c.LaunchId)
 	method := "GET"
 	auth_token := c.AuthToken
@@ -267,14 +219,6 @@ func (c *RPConnector) GetAllTestIds() []string {
 }
 
 func (c *RPConnector) GetTestLog(test_id string) []string {
-	// req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/v1/%s/log?filter.eq.item=%s&filter.eq.launchId=%s", c.RPURL, c.ProjectName, test_id, c.LaunchId), nil)
-	// req.Header.Add("Accept", "application/json")
-	// req.Header.Add("Authorization", fmt.Sprintf("bearer %s", c.AuthToken))
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// resp, _ := c.Client.Do(req)
-	// data, _ := ioutil.ReadAll(resp.Body)
 	url := fmt.Sprintf("%s/api/v1/%s/log?filter.eq.item=%s&filter.eq.launchId=%s", c.RPURL, c.ProjectName, test_id, c.LaunchId)
 	method := "GET"
 	auth_token := c.AuthToken
@@ -311,6 +255,8 @@ func (c *RPConnector) updateAttributesForPrediction(id, prediction string) error
 	}
 	body := bytes.NewBuffer(d)
 	_, err, _ = common.SendHTTPRequest(method, url, auth_token, body, c.Client)
+	// fmt.Printf("This is the return from updating attributes: %s\n", string(data))
+	log.Printf("Updated the test item(id): %s with it's prediction %s\n", id, prediction)
 	return err
 
 }
@@ -327,14 +273,6 @@ func getExistingDefectTypeLocatorId(gjson_obj []gjson.Result, defect_type string
 
 func (c *RPConnector) InitConnector() {
 	fmt.Println("Initializing Defect Types...")
-	// req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/v1/%s/settings", c.RPURL, c.ProjectName), nil)
-	// req.Header.Add("Authorization", fmt.Sprintf("bearer %s", c.AuthToken))
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// req.Header.Add("Content-Type", "application/json")
-	// resp, _ := c.Client.Do(req)
-	// d, _ := ioutil.ReadAll(resp.Body)
 	url := fmt.Sprintf("%s/api/v1/%s/settings", c.RPURL, c.ProjectName)
 	method := "GET"
 	auth_token := c.AuthToken
@@ -349,17 +287,6 @@ func (c *RPConnector) InitConnector() {
 		locator, ok := getExistingDefectTypeLocatorId(ti_sub, v["longName"])
 		if !ok {
 			d, _ := json.Marshal(v)
-			// req, err := http.NewRequest("POST", fmt.Sprintf("%s/api/v1/%s/settings/sub-type", c.RPURL, c.ProjectName), bytes.NewBuffer(d))
-			// req.Header.Add("Authorization", fmt.Sprintf("bearer %s", c.AuthToken))
-			// if err != nil {
-			// 	panic(err)
-			// }
-			// req.Header.Add("Content-Type", "application/json")
-			// resp, err := c.Client.Do(req)
-			// if err != nil {
-			// 	panic(fmt.Errorf("request to get test ids failed: %s", err))
-			// }
-			// data, err := ioutil.ReadAll(resp.Body)
 			url := fmt.Sprintf("%s/api/v1/%s/settings/sub-type", c.RPURL, c.ProjectName)
 			method := "POST"
 			auth_token := c.AuthToken
