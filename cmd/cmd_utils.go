@@ -106,5 +106,6 @@ func initTFAConfigFile(viper *viper.Viper) {
 	viper.SetConfigType("ini")
 	viper.SetDefault("config.concurrency", true)
 	viper.SetDefault("config.retry_times", 1)
+	viper.SetDefault("config.add_attributes", false)
 	viper.ReadConfig(bytes.NewBuffer(file))
 }

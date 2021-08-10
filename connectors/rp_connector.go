@@ -292,6 +292,29 @@ func (c *RPConnector) GetTestLog(test_id string) []string {
 	return ret
 }
 
+type attribute map[string]string
+
+func (c *RPConnector) updateAttributesForPrediction(id, prediction string) error {
+	updated_attribute := map[string][]attribute{
+		"attributes": {
+			attribute{
+				"key":   "AI Prediction",
+				"value": prediction},
+		},
+	}
+	url := fmt.Sprintf("%s/api/v1/%s/item/%s/update", c.RPURL, c.ProjectName, id)
+	method := "PUT"
+	auth_token := c.AuthToken
+	d, err := json.Marshal(updated_attribute)
+	if err != nil {
+		panic(err)
+	}
+	body := bytes.NewBuffer(d)
+	_, err, _ = common.SendHTTPRequest(method, url, auth_token, body, c.Client)
+	return err
+
+}
+
 func getExistingDefectTypeLocatorId(gjson_obj []gjson.Result, defect_type string) (string, bool) {
 	for _, v := range gjson_obj {
 		defect_type_info := v.Map()
@@ -303,7 +326,7 @@ func getExistingDefectTypeLocatorId(gjson_obj []gjson.Result, defect_type string
 }
 
 func (c *RPConnector) InitConnector() {
-	fmt.Println("Initializing defect types...")
+	fmt.Println("Initializing Defect Types...")
 	// req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/v1/%s/settings", c.RPURL, c.ProjectName), nil)
 	// req.Header.Add("Authorization", fmt.Sprintf("bearer %s", c.AuthToken))
 	// if err != nil {
@@ -351,5 +374,4 @@ func (c *RPConnector) InitConnector() {
 			v["locator"] = locator
 		}
 	}
-	// fmt.Println(PREDICTED_SUB_TYPES)
 }
