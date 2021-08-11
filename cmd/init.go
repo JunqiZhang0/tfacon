@@ -16,8 +16,6 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
@@ -27,7 +25,8 @@ var initCmd = &cobra.Command{
 	Short: "init will create a sample workspace for tfacon",
 	Long:  `init will create a sample workspace for tfacon`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("init called")
+		// fmt.Println("init called")
+		initWorkspace()
 	},
 }
 

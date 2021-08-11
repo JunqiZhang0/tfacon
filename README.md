@@ -131,7 +131,20 @@ TFAURL:          https://tfa.com/latest/model
 Validation Passed!
 ```
 You can also add -v to have more detailed information for validation error
-#### init(To be added)
+#### init
+```bash
+❯ tfacon init -h                                     
+init will create a sample workspace for tfacon
+
+Usage:
+  tfacon init [flags]
+
+Flags:
+  -h, --help   help for init
+
+Global Flags:
+  -v, --verbose   You can add this tag to print more detailed info
+```
 
 
 ### Advanced Config

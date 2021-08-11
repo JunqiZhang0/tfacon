@@ -2,8 +2,10 @@ package cmd
 
 import (
 	"bytes"
+	"fmt"
 	"io/ioutil"
 	"os"
+	"os/exec"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -96,4 +98,32 @@ func initTFAConfigFile(viper *viper.Viper) {
 	viper.ReadConfig(bytes.NewBuffer(file))
 	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "You can add this tag to print more detailed info")
 	viper.BindPFlag("verbose", rootCmd.PersistentFlags().Lookup("verbose"))
+}
+
+func initWorkspace() {
+	pwd, err := os.Getwd()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(pwd)
+	os.Mkdir("tfacon_workspace", 0700)
+	os.Mkdir("/tmp/.tfacon", 0700)
+	os.Chdir("/tmp/.tfacon/")
+	cmd := exec.Command("git", "clone", "https://github.com/JunqiZhang0/tfacon.git")
+	err = cmd.Run()
+	if err != nil {
+		fmt.Println(err)
+	}
+	os.Chdir("/tmp/.tfacon/tfacon")
+	cmd = exec.Command("mv", "examples", pwd+"/tfacon_workspace")
+	err = cmd.Run()
+	if err != nil {
+		fmt.Println(err)
+	}
+	cmd = exec.Command("rm", "/tmp/.tfacon", "-rf")
+	err = cmd.Run()
+	if err != nil {
+		fmt.Println(err)
+	}
+
 }
