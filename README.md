@@ -98,6 +98,18 @@ Eample Output
 This is the return info from update: [{"issueType":"ab001","comment":"","autoAnalyzed":false,"ignoreAnalyzer":false,"externalSystemIssues":[]},{"issueType":"ab001","comment":"","autoAnalyzed":false,"ignoreAnalyzer":false,"externalSystemIssues":[]},{"issueType":"ab001","comment":"Should be marked with custom defect type","autoAnalyzed":false,"ignoreAnalyzer":false,"externalSystemIssues":[]},{"issueType":"si001","comment":"","autoAnalyzed":false,"ignoreAnalyzer":false,"externalSystemIssues":[]},{"issueType":"ab001","comment":"Should be marked with custom defect type","autoAnalyzed":false,"ignoreAnalyzer":false,"externalSystemIssues":[]},{"issueType":"ab001","comment":"Should be marked with custom defect type","autoAnalyzed":false,"ignoreAnalyzer":false,"externalSystemIssues":[]},{"issueType":"ab001","comment":"Should be marked with custom defect type","autoAnalyzed":false,"ignoreAnalyzer":false,"externalSystemIssues":[]},{"issueType":"ab001","comment":"Should be marked with custom defect type","autoAnalyzed":false,"ignoreAnalyzer":false,"externalSystemIssues":[]},{"issueType":"pb001","comment":"Should be marked with custom defect type","autoAnalyzed":false,"ignoreAnalyzer":false,"externalSystemIssues":[]}]
 ```
 #### validate
+```bash
+❯ tfacon validate --project-name "TFACON" --launch-id 231
+LaunchId:        231
+ProjectName:     TFACON
+AuthToken:       xxxxxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx
+RPURL:           https://reportportal-dev.com
+Client:          &{<nil> <nil> <nil> 0s}
+TFAURL:          https://tfa.com/latest/model
+
+Validation Passed!
+```
+You can also add -v to have more detailed information for validation error
 #### init(To be added)
 
 
