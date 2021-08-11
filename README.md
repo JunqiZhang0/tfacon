@@ -11,7 +11,7 @@ an AI/ML predictioner developed by *Red Hat D&O Data Science Team* which can pre
 ```bash
 go get -u github.com/JunqiZhang0/tfacon
 ```
-##### Via pip(To be added)
+##### Via pip
 ```bash
 pip install "git+https://github.com/JunqiZhang0/tfacon.git@develop#egg=tfacon&subdirectory=pip_package"
 ```
