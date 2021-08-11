@@ -82,7 +82,7 @@ Flags:
       --tfa-url string          The url to the TFA Classifier (default "default val for tfa url")
 ```
 
-Eample Output
+Example Output
 ```bash
 ❯ tfacon run --project-name "project_name" --launch-id 1006
 
@@ -98,6 +98,27 @@ Eample Output
 This is the return info from update: [{"issueType":"ab001","comment":"","autoAnalyzed":false,"ignoreAnalyzer":false,"externalSystemIssues":[]},{"issueType":"ab001","comment":"","autoAnalyzed":false,"ignoreAnalyzer":false,"externalSystemIssues":[]},{"issueType":"ab001","comment":"Should be marked with custom defect type","autoAnalyzed":false,"ignoreAnalyzer":false,"externalSystemIssues":[]},{"issueType":"si001","comment":"","autoAnalyzed":false,"ignoreAnalyzer":false,"externalSystemIssues":[]},{"issueType":"ab001","comment":"Should be marked with custom defect type","autoAnalyzed":false,"ignoreAnalyzer":false,"externalSystemIssues":[]},{"issueType":"ab001","comment":"Should be marked with custom defect type","autoAnalyzed":false,"ignoreAnalyzer":false,"externalSystemIssues":[]},{"issueType":"ab001","comment":"Should be marked with custom defect type","autoAnalyzed":false,"ignoreAnalyzer":false,"externalSystemIssues":[]},{"issueType":"ab001","comment":"Should be marked with custom defect type","autoAnalyzed":false,"ignoreAnalyzer":false,"externalSystemIssues":[]},{"issueType":"pb001","comment":"Should be marked with custom defect type","autoAnalyzed":false,"ignoreAnalyzer":false,"externalSystemIssues":[]}]
 ```
 #### validate
+```bash
+❯ tfacon validate -h
+validate if the parameter is valid and if the urls are accesible
+
+Usage:
+  tfacon validate [flags]
+
+Flags:
+      --auth-token string       The AUTH_TOKEN of report portal
+      --connector-type string   The type of connector you want to use(example: RPCon, PolarionCon, JiraCon) (default "RPCon")
+  -h, --help                    help for validate
+      --launch-id string        The launch id of report portal
+      --platform-url string     The url to the test platform(example: https://reportportal-ccit.apps.ocp4.prod.psi.redhat.com) (default "default val for platform url")
+      --project-name string     The project name of report portal
+      --tfa-url string          The url to the TFA Classifier (default "default val for tfa url")
+
+Global Flags:
+  -v, --verbose   You can add this tag to print more detailed info
+```
+
+Example Output
 ```bash
 ❯ tfacon validate --project-name "TFACON" --launch-id 231
 LaunchId:        231
