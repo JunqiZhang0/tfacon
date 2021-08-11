@@ -16,6 +16,7 @@ limitations under the License.
 package cmd
 
 import (
+	"github.com/JunqiZhang0/tfacon/common"
 	"github.com/JunqiZhang0/tfacon/core"
 
 	"github.com/spf13/cobra"
@@ -28,6 +29,7 @@ var runCmd = &cobra.Command{
 	Short: "run the info retrival and get the pridiction from TFA",
 	Long:  `run the info retrival and get the pridiction from TFA`,
 	Run: func(cmd *cobra.Command, args []string) {
+		common.PrintHeader(rootCmd.Version)
 		core.Run(viperRun, viperConfig)
 	},
 }

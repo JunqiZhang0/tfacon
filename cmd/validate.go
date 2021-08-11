@@ -16,6 +16,9 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
+
+	"github.com/JunqiZhang0/tfacon/common"
 	"github.com/JunqiZhang0/tfacon/core"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -28,11 +31,13 @@ var validateCmd = &cobra.Command{
 	Long:  `validate if the parameter is valid and if the urls are accesible`,
 	Run: func(cmd *cobra.Command, args []string) {
 		con := core.GetInfo(viperValidate)
-		err := con.Validate()
-		if err == nil {
-			printGreen("Validation Passed!")
+		fmt.Println(con.String())
+		success, err := con.Validate(viperConfig.GetBool("verbose"))
+		if err == nil && success {
+			common.PrintGreen("Validation Passed!")
 		} else {
-			panic(err)
+			fmt.Println()
+			common.PrintRed(fmt.Sprintf("There is an error during validation: \n%s", err))
 		}
 	},
 }
@@ -42,5 +47,5 @@ var viperValidate *viper.Viper
 func init() {
 	rootCmd.AddCommand(validateCmd)
 	viperValidate = viper.New()
-	initConfig(viperList, validateCmd, cmdInfoList)
+	initConfig(viperValidate, validateCmd, cmdInfoList)
 }

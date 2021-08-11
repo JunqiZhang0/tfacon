@@ -5,7 +5,24 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/fatih/color"
 )
+
+func PrintGreen(str string) {
+	color.Green(str)
+}
+
+func PrintRed(str string) {
+	color.Red(str)
+}
+
+func PrintHeader(version string) {
+	fmt.Println("--------------------------------------------------")
+	fmt.Printf("tfacon  %s\n", version)
+	fmt.Println("Copyright (C) 2021, Red Hat, Inc.")
+	fmt.Print("-------------------------------------------------\n\n\n")
+}
 
 func SendHTTPRequest(method, url, auth_token string, body *bytes.Buffer, client *http.Client) ([]byte, error, bool) {
 	req, err := http.NewRequest(method, url, body)

@@ -16,7 +16,7 @@ type TFACon interface {
 	UpdateAll(common.GeneralUpdatedList)
 	String() string
 	InitConnector()
-	Validate() error
+	Validate(verbose bool) (bool, error)
 }
 
 func Run(viperRun, viperConfig *viper.Viper) {

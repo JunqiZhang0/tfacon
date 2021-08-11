@@ -16,6 +16,9 @@ limitations under the License.
 package cmd
 
 import (
+	"log"
+
+	"github.com/JunqiZhang0/tfacon/common"
 	"github.com/JunqiZhang0/tfacon/core"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -27,9 +30,10 @@ var listCmd = &cobra.Command{
 	Short: "list all constructed information",
 	Long:  `list all information constructed from tfacon.yml/enviroment variables/cli`,
 	Run: func(cmd *cobra.Command, args []string) {
-		printHeader()
+		common.PrintHeader(rootCmd.Version)
+		log.Println("Printing the constructed information")
 		con := core.GetInfo(viperList)
-		printGreen(con.String())
+		common.PrintGreen(con.String())
 	},
 }
 var viperList *viper.Viper

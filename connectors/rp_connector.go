@@ -47,8 +47,43 @@ type RPConnector struct {
 	TFAURL      string `mapstructure:"TFA_URL"`
 }
 
-func (c *RPConnector) Validate() error {
-	return errors.New("")
+func (c *RPConnector) Validate(verbose bool) (bool, error) {
+	validateRPURLAndAuthToken, err := c.validateRPURLAndAuthToken()
+	if err != nil {
+		err = errors.Errorf("%s", err)
+		return false, err
+	}
+	validateTFA, err := c.validateTFAURL()
+	if err != nil {
+		err = errors.Errorf("%s", err)
+		return false, err
+	}
+	projectnameNotEmpty := c.ProjectName != ""
+	if !projectnameNotEmpty {
+		err = errors.Errorf("%s", "You need to input project name")
+		return false, err
+	}
+	launchidNotEmpty := c.LaunchId != ""
+	if !launchidNotEmpty {
+		err = errors.Errorf("%s", "You need to input launch id")
+		return false, err
+	}
+	ret := validateRPURLAndAuthToken && validateTFA && projectnameNotEmpty && launchidNotEmpty
+	if verbose {
+		fmt.Printf("lauchidValidate: %t\nRPURLValidate: %t\nprojectnameValidate: %t\nTFAURLValidate:%t\n", launchidNotEmpty, validateRPURLAndAuthToken, projectnameNotEmpty, validateTFA)
+	}
+	return ret, nil
+}
+
+func (c *RPConnector) validateTFAURL() (bool, error) {
+	body := `{"data": {"id": "123", "project": "rhv", "messages": ""}}`
+	_, err, success := common.SendHTTPRequest("POST", c.TFAURL, "", bytes.NewBuffer([]byte(body)), c.Client)
+	return success, err
+}
+
+func (c *RPConnector) validateRPURLAndAuthToken() (bool, error) {
+	_, err, success := common.SendHTTPRequest("GET", c.RPURL+"/api/v1/project/list", c.AuthToken, bytes.NewBuffer(nil), c.Client)
+	return success, err
 }
 
 func (c RPConnector) String() string {
@@ -75,12 +110,14 @@ func (c *RPConnector) UpdateAll(updated_list_of_issues common.GeneralUpdatedList
 	if err != nil {
 		panic(fmt.Sprintf("Updated All failed: %s", err))
 	}
-	if success {
-		fmt.Println("Updated All Test Items Successfully!")
-	} else {
-		fmt.Println("Updated Failed!")
-	}
+
 	fmt.Printf("This is the return info from update: %v\n", string(data))
+	if success {
+		fmt.Println()
+		common.PrintGreen("Updated All Test Items Successfully!")
+	} else {
+		common.PrintRed("Updated Failed!")
+	}
 
 }
 

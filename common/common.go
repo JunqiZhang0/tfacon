@@ -16,9 +16,9 @@ type TFAInput struct {
 }
 
 var TFA_DEFECT_TYPE_TO_SUB_TYPE map[string]PREDICTED_SUB_TYPE = map[string]PREDICTED_SUB_TYPE{
-	"AutomationBug": PREDICTED_AUTOMATION_BUG,
-	"ProductBug":    PREDICTED_PRODUCT_BUG,
-	"SystemBug":     PREDICTED_SYSTEM_BUG,
+	"Automation Bug": PREDICTED_AUTOMATION_BUG,
+	"Product Bug":    PREDICTED_PRODUCT_BUG,
+	"System Issue":   PREDICTED_SYSTEM_BUG,
 }
 
 // var DEFECT_TYPE map[string]string = map[string]string{

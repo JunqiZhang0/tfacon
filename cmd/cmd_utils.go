@@ -2,12 +2,9 @@ package cmd
 
 import (
 	"bytes"
-	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 
-	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -76,17 +73,6 @@ func initViperVal(cmd *cobra.Command, viper *viper.Viper, cmdName, valName, defa
 
 }
 
-func printGreen(str string) {
-	color.Green(str)
-}
-func printHeader() {
-	fmt.Println("--------------------------------------------------")
-	fmt.Printf("tfacon  %s\n", rootCmd.Version)
-	fmt.Println("Copyright (C) 2021, Red Hat, Inc.")
-	fmt.Print("-------------------------------------------------\n\n\n")
-	log.Println("Printing the constructed information")
-}
-
 func initTFAConfigFile(viper *viper.Viper) {
 	var file []byte
 	var err error
@@ -108,4 +94,6 @@ func initTFAConfigFile(viper *viper.Viper) {
 	viper.SetDefault("config.retry_times", 1)
 	viper.SetDefault("config.add_attributes", false)
 	viper.ReadConfig(bytes.NewBuffer(file))
+	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "You can add this tag to print more detailed info")
+	viper.BindPFlag("verbose", rootCmd.PersistentFlags().Lookup("verbose"))
 }
