@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-var viperconfigfortest *viper.Viper = viper.New()
+// var viperconfigfortest *viper.Viper = viper.New()
 
 // func Test_runHelper(t *testing.T) {
 // 	viperconfigfortest.SetConfigType("ini")
