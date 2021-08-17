@@ -1,23 +1,15 @@
 package cmd
 
 import (
+	"bytes"
 	"fmt"
-	"log"
+	"io/ioutil"
+	"os"
+	"os/exec"
 
-	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
-
-// var platformURL string
-// var tfaURL string
-var viper0 *viper.Viper
-
-// launch_id := "909"
-// project_name := "TEFLO_RP"
-// auth_token := "510256fa-8a43-4b6b-a0d2-c3388d9164a9"
-// rp_url := "https://reportportal-ccit.apps.ocp4.prod.psi.redhat.com"
-// tfa_url := "https://dave.corp.redhat.com:443/models/5f248eb11e43c7000602300b/latest/model"
 
 var cmdInfoList []map[string]string = []map[string]string{
 	{
@@ -56,20 +48,19 @@ var cmdInfoList []map[string]string = []map[string]string{
 		"defaultVal":     "",
 		"cmdDescription": "The AUTH_TOKEN of report portal",
 	},
-	// Client      *http.Client
 }
 
-func initConfig(cmd *cobra.Command, cmdInfoList []map[string]string) {
-	viper0 = viper.New()
-	viper0.AddConfigPath(".")
-	viper0.SetConfigName("tfacon")
-	viper0.AutomaticEnv()
+func initConfig(viper *viper.Viper, cmd *cobra.Command, cmdInfoList []map[string]string) {
+
+	viper.AddConfigPath(".")
+	viper.SetConfigName("tfacon")
+	viper.AutomaticEnv()
+
 	for _, v := range cmdInfoList {
 
-		initViperVal(cmd, viper0, v["cmdName"], v["valName"], v["defaultVal"], v["cmdDescription"])
+		initViperVal(cmd, viper, v["cmdName"], v["valName"], v["defaultVal"], v["cmdDescription"])
 	}
-	//initViperVal(cmd, viper0, "tfa-url", "TFAURL", "default val for tfa url", "The url to the TFA Classifier")
-	//initViperVal(cmd, viper0, "platform-url", "PLATFORMURL", "default val for platform url", "The url to the test platform")
+	viper.ReadInConfig()
 }
 
 func initViperVal(cmd *cobra.Command, viper *viper.Viper, cmdName, valName, defaultVal, cmdDescription string) {
@@ -81,16 +72,58 @@ func initViperVal(cmd *cobra.Command, viper *viper.Viper, cmdName, valName, defa
 	}
 	cmd.PersistentFlags().StringP(cmdName, "", viper.GetString(valName), cmdDescription)
 	viper.BindPFlag(valName, cmd.PersistentFlags().Lookup(cmdName))
-	viper.ReadInConfig()
+
 }
 
-func printGreen(str string) {
-	color.Green(str)
+func initTFAConfigFile(viper *viper.Viper) {
+	var file []byte
+	var err error
+	if os.Getenv("TFACON_CONFIG_PATH") != "" {
+		file, err = ioutil.ReadFile(os.Getenv("TFACON_CONFIG_PATH"))
+	} else {
+		file, err = ioutil.ReadFile("./tfacon.cfg")
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			os.Create("tfacon.cfg")
+		}
+	}()
+	if err != nil {
+		panic(err)
+	}
+	viper.SetConfigType("ini")
+	viper.SetDefault("config.concurrency", true)
+	viper.SetDefault("config.retry_times", 1)
+	viper.SetDefault("config.add_attributes", false)
+	viper.ReadConfig(bytes.NewBuffer(file))
+	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "You can add this tag to print more detailed info")
+	viper.BindPFlag("verbose", rootCmd.PersistentFlags().Lookup("verbose"))
 }
-func printHeader() {
-	fmt.Println("--------------------------------------------------")
-	fmt.Printf("tfacon  %s\n", rootCmd.Version)
-	fmt.Println("Copyright (C) 2021, Red Hat, Inc.")
-	fmt.Print("-------------------------------------------------\n\n\n")
-	log.Println("Printing the constructed information")
+
+func initWorkspace() {
+	pwd, err := os.Getwd()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(pwd)
+	os.Mkdir("tfacon_workspace", 0700)
+	os.Mkdir("/tmp/.tfacon", 0700)
+	os.Chdir("/tmp/.tfacon/")
+	cmd := exec.Command("git", "clone", "https://github.com/JunqiZhang0/tfacon.git")
+	err = cmd.Run()
+	if err != nil {
+		fmt.Println(err)
+	}
+	os.Chdir("/tmp/.tfacon/tfacon")
+	cmd = exec.Command("mv", "examples", pwd+"/tfacon_workspace")
+	err = cmd.Run()
+	if err != nil {
+		fmt.Println(err)
+	}
+	cmd = exec.Command("rm", "/tmp/.tfacon", "-rf")
+	err = cmd.Run()
+	if err != nil {
+		fmt.Println(err)
+	}
+
 }

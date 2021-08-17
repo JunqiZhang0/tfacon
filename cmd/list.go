@@ -16,10 +16,12 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
-	"tfacon/core"
+	"log"
 
+	"github.com/JunqiZhang0/tfacon/common"
+	"github.com/JunqiZhang0/tfacon/core"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // listCmd represents the list command
@@ -28,12 +30,16 @@ var listCmd = &cobra.Command{
 	Short: "list all constructed information",
 	Long:  `list all information constructed from tfacon.yml/enviroment variables/cli`,
 	Run: func(cmd *cobra.Command, args []string) {
-		printHeader()
-		printGreen(fmt.Sprintf("%+v\n", core.GetInfo(viper0)))
+		common.PrintHeader(rootCmd.Version)
+		log.Println("Printing the constructed information")
+		con := core.GetInfo(viperList)
+		common.PrintGreen(con.String())
 	},
 }
+var viperList *viper.Viper
 
 func init() {
 	rootCmd.AddCommand(listCmd)
-	initConfig(listCmd, cmdInfoList)
+	viperList = viper.New()
+	initConfig(viperList, listCmd, cmdInfoList)
 }
