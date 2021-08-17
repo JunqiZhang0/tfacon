@@ -29,6 +29,16 @@ connector_type: "RPCon"
 ```
 The default name is tfacon.yml, you can't change the name of this for this moment, we will add this feature later
 
+#### tfacon.cfg
+This is where you put all the config information for tfacon
+```ini
+[config]
+retry_times=2
+concurrency=true
+add_attributes=true
+```
+The default name for this cfg file is tfacon.cfg, you can change this by edit this environment variable __TFACON_CONFIG_PATH__
+
 #### list
 ```bash
 ❯ tfacon list -h

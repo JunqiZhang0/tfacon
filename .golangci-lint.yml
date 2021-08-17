@@ -1,0 +1,14 @@
+run:
+  tests: false
+linters:
+  enable-all: true
+  disable:
+    - godox
+    - typecheck
+    - errcheck
+issues:
+  exclude-use-default: false
+  exclude-rules:
+    - linters:
+      - gosec
+      text: "G107"

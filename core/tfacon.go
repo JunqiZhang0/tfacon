@@ -1,6 +1,7 @@
 package core
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/JunqiZhang0/tfacon/connectors"
@@ -54,12 +55,20 @@ func GetCon(viper *viper.Viper) TFACon {
 	switch viper.Get("CONNECTOR_TYPE") {
 	case "RPCon":
 		con = &connectors.RPConnector{Client: &http.Client{}}
-		viper.Unmarshal(con)
-		// case "POLCon":
-		// 	con = RPConnector{}
-		// case "JiraCon":
-		// 	con = RPConnector{}
-
+		err := viper.Unmarshal(con)
+		if err != nil {
+			fmt.Println(err)
+		}
+	// case "POLCon":
+	// 	con = RPConnector{}
+	// case "JiraCon":
+	// 	con = RPConnector{}
+	default:
+		con = &connectors.RPConnector{Client: &http.Client{}}
+		err := viper.Unmarshal(con)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 	return con
 }
