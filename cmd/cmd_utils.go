@@ -97,7 +97,7 @@ func initTFAConfigFile(viper *viper.Viper) {
 	viper.SetDefault("config.add_attributes", false)
 	viper.ReadConfig(bytes.NewBuffer(file))
 	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "You can add this tag to print more detailed info")
-	viper.BindPFlag("verbose", rootCmd.PersistentFlags().Lookup("verbose"))
+	viper.BindPFlag("config.verbose", rootCmd.PersistentFlags().Lookup("verbose"))
 }
 
 func initWorkspace() {
