@@ -44,8 +44,8 @@ func GetInfo(viper *viper.Viper) TFACon {
 	return con
 }
 
-func Validate(viper *viper.Viper) (bool, error) {
-	var con TFACon = GetCon(viper)
+func Validate(con TFACon, viper *viper.Viper) (bool, error) {
+	// var con TFACon = GetCon(viper)
 	success, err := con.Validate(viper.GetBool("verbose"))
 	return success, err
 }
