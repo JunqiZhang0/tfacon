@@ -96,7 +96,7 @@ func (c RPConnector) String() string {
 	return str
 }
 
-func (c *RPConnector) UpdateAll(updated_list_of_issues common.GeneralUpdatedList) {
+func (c *RPConnector) UpdateAll(updated_list_of_issues common.GeneralUpdatedList, verbose bool) {
 	if len(updated_list_of_issues.GetSelf().(UpdatedList).IssuesList) == 0 {
 		return
 	}
@@ -110,8 +110,10 @@ func (c *RPConnector) UpdateAll(updated_list_of_issues common.GeneralUpdatedList
 	if err != nil {
 		panic(fmt.Sprintf("Updated All failed: %s", err))
 	}
+	if verbose {
+		fmt.Printf("This is the return info from update: %v\n", string(data))
+	}
 
-	fmt.Printf("This is the return info from update: %v\n", string(data))
 	if success {
 		fmt.Println()
 		common.PrintGreen("Updated All Test Items Successfully!")

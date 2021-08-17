@@ -13,7 +13,7 @@ import (
 type TFACon interface {
 	GetAllTestIds() []string
 	BuildUpdatedList(ids []string, concurrent bool, add_attributes bool) common.GeneralUpdatedList
-	UpdateAll(common.GeneralUpdatedList)
+	UpdateAll(common.GeneralUpdatedList, bool)
 	String() string
 	InitConnector()
 	Validate(verbose bool) (bool, error)
@@ -34,13 +34,19 @@ func runHelper(viperConfig *viper.Viper, ids []string, con TFACon) {
 	}
 	updated_list_of_issues := con.BuildUpdatedList(ids, viperConfig.GetBool("config.concurrency"), viperConfig.GetBool("config.add_attributes"))
 	// Doing this because the api can only take 20 items per request
-	con.UpdateAll(updated_list_of_issues)
+	con.UpdateAll(updated_list_of_issues, viperConfig.GetBool("config.verbose"))
 	runHelper(viperConfig, con.GetAllTestIds(), con)
 }
 
 func GetInfo(viper *viper.Viper) TFACon {
 	var con TFACon = GetCon(viper)
 	return con
+}
+
+func Validate(viper *viper.Viper) (bool, error) {
+	var con TFACon = GetCon(viper)
+	success, err := con.Validate(viper.GetBool("verbose"))
+	return success, err
 }
 
 func GetCon(viper *viper.Viper) TFACon {

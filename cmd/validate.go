@@ -32,7 +32,7 @@ var validateCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		con := core.GetInfo(viperValidate)
 		fmt.Println(con.String())
-		success, err := con.Validate(viperConfig.GetBool("verbose"))
+		success, err := core.Validate(viperConfig)
 		if err == nil && success {
 			common.PrintGreen("Validation Passed!")
 		} else {
