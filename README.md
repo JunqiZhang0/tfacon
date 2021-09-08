@@ -19,10 +19,11 @@ pip install "git+https://github.com/JunqiZhang0/tfacon.git@develop#egg=tfacon&su
 
 #### tfacon.yml
 This is where you store all parameters like this
+__You must use auth_token from a superadmin account to run tfacon, otherwise the validation will fail!__
 ```yaml
 launch_id: "your launch_id goes here"
 project_name: "your project name goes here"
-auth_token: "xxxxx-xxxx-xxxxx-xxxx-xxxxx"
+auth_token: "xxxxx-xxxx-xxxxx-xxxx-xxxxx" 
 platform_url: "https://reportportal.com"
 tfa_url: "https://dave.corp.redhat.com:443/"
 connector_type: "RPCon"
@@ -108,6 +109,7 @@ Example Output
 This is the return info from update: [{"issueType":"ab001","comment":"","autoAnalyzed":false,"ignoreAnalyzer":false,"externalSystemIssues":[]},{"issueType":"ab001","comment":"","autoAnalyzed":false,"ignoreAnalyzer":false,"externalSystemIssues":[]},{"issueType":"ab001","comment":"Should be marked with custom defect type","autoAnalyzed":false,"ignoreAnalyzer":false,"externalSystemIssues":[]},{"issueType":"si001","comment":"","autoAnalyzed":false,"ignoreAnalyzer":false,"externalSystemIssues":[]},{"issueType":"ab001","comment":"Should be marked with custom defect type","autoAnalyzed":false,"ignoreAnalyzer":false,"externalSystemIssues":[]},{"issueType":"ab001","comment":"Should be marked with custom defect type","autoAnalyzed":false,"ignoreAnalyzer":false,"externalSystemIssues":[]},{"issueType":"ab001","comment":"Should be marked with custom defect type","autoAnalyzed":false,"ignoreAnalyzer":false,"externalSystemIssues":[]},{"issueType":"ab001","comment":"Should be marked with custom defect type","autoAnalyzed":false,"ignoreAnalyzer":false,"externalSystemIssues":[]},{"issueType":"pb001","comment":"Should be marked with custom defect type","autoAnalyzed":false,"ignoreAnalyzer":false,"externalSystemIssues":[]}]
 ```
 #### validate
+__You must use auth_token from a superadmin account to run tfacon, otherwise the validation will fail!__
 ```bash
 ❯ tfacon validate -h
 validate if the parameter is valid and if the urls are accesible
