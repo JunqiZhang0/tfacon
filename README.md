@@ -167,10 +167,15 @@ Example
 [config]
 retry_times=2
 concurrency=True
+add_attributes=true
 ```
 
 #### Set Concurrency
 __You can set this to True or False, if you set it to True tfacon will deal with the test items in an async non-blocking way(faster), you can disable it to have a more clear view, but you will have a slower run compared to setting it to True__
+
+#### add_attributes
+__You can enable this to add an extra attribute "AI Prediction" to all the test items, the value of this attribute will be the prediction extracted from TFA Classifier__
+
 #### Set retry(To be added)
 
 ## Developer Guide
