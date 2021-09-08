@@ -46,7 +46,7 @@ func GetInfo(viper *viper.Viper) TFACon {
 
 func Validate(con TFACon, viper *viper.Viper) (bool, error) {
 	// var con TFACon = GetCon(viper)
-	success, err := con.Validate(viper.GetBool("verbose"))
+	success, err := con.Validate(viper.GetBool("config.verbose"))
 	return success, err
 }
 

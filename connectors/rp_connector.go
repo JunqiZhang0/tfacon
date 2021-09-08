@@ -48,30 +48,40 @@ type RPConnector struct {
 }
 
 func (c *RPConnector) Validate(verbose bool) (bool, error) {
+	fmt.Print("Validating....\n")
 	validateRPURLAndAuthToken, err := c.validateRPURLAndAuthToken()
+	if verbose {
+		fmt.Printf("RPURLValidate: %t\n", validateRPURLAndAuthToken)
+	}
 	if err != nil {
 		err = errors.Errorf("%s", err)
 		return false, err
 	}
 	validateTFA, err := c.validateTFAURL()
+	if verbose {
+		fmt.Printf("TFAURLValidate: %t\n", validateTFA)
+	}
 	if err != nil {
 		err = errors.Errorf("%s", err)
 		return false, err
 	}
 	projectnameNotEmpty := c.ProjectName != ""
+	if verbose {
+		fmt.Printf("projectnameValidate: %t\n", projectnameNotEmpty)
+	}
 	if !projectnameNotEmpty {
 		err = errors.Errorf("%s", "You need to input project name")
 		return false, err
 	}
 	launchidNotEmpty := c.LaunchId != ""
+	if verbose {
+		fmt.Printf("lauchidValidate: %t\n", launchidNotEmpty)
+	}
 	if !launchidNotEmpty {
 		err = errors.Errorf("%s", "You need to input launch id")
 		return false, err
 	}
 	ret := validateRPURLAndAuthToken && validateTFA && projectnameNotEmpty && launchidNotEmpty
-	if verbose {
-		fmt.Printf("lauchidValidate: %t\nRPURLValidate: %t\nprojectnameValidate: %t\nTFAURLValidate:%t\n", launchidNotEmpty, validateRPURLAndAuthToken, projectnameNotEmpty, validateTFA)
-	}
 	return ret, nil
 }
 
