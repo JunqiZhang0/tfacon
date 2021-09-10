@@ -326,9 +326,12 @@ func (c *RPConnector) InitConnector() {
 	method := "GET"
 	auth_token := c.AuthToken
 	body := bytes.NewBuffer(nil)
-	data, err, _ := common.SendHTTPRequest(method, url, auth_token, body, c.Client)
+	data, err, success := common.SendHTTPRequest(method, url, auth_token, body, c.Client)
 	if err != nil {
 		panic(err)
+	}
+	if !success {
+		panic(fmt.Errorf("created defect types failed, please use superadmin auth_token"))
 	}
 	ti_sub := gjson.Get(string(data), "subTypes.TO_INVESTIGATE").Array()
 
