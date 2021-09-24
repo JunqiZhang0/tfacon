@@ -19,13 +19,8 @@ var TFA_DEFECT_TYPE_TO_SUB_TYPE map[string]PREDICTED_SUB_TYPE = map[string]PREDI
 	"Automation Bug": PREDICTED_AUTOMATION_BUG,
 	"Product Bug":    PREDICTED_PRODUCT_BUG,
 	"System Issue":   PREDICTED_SYSTEM_BUG,
+	"No Defect":      PREDICTED_NO_DEFECT,
 }
-
-// var DEFECT_TYPE map[string]string = map[string]string{
-// 	"AutomationBug": "ab001",
-// 	"ProductBug":    "pb001",
-// 	"SystemBug":     "si001",
-// }
 
 type PREDICTED_SUB_TYPE map[string]string
 
@@ -33,6 +28,7 @@ var PREDICTED_SUB_TYPES map[string]PREDICTED_SUB_TYPE = map[string]PREDICTED_SUB
 	"PREDICTED_AUTOMATION_BUG": PREDICTED_AUTOMATION_BUG,
 	"PREDICTED_SYSTEM_BUG":     PREDICTED_SYSTEM_BUG,
 	"PREDICTED_PRODUCT_BUG":    PREDICTED_PRODUCT_BUG,
+	"PREDICTED_NO_DEFECT":      PREDICTED_NO_DEFECT,
 }
 
 var PREDICTED_AUTOMATION_BUG PREDICTED_SUB_TYPE = PREDICTED_SUB_TYPE{
@@ -54,4 +50,11 @@ var PREDICTED_PRODUCT_BUG PREDICTED_SUB_TYPE = PREDICTED_SUB_TYPE{
 	"longName":  "Predicted Product Bug",
 	"shortName": "TIP",
 	"color":     "#ffaaaa",
+}
+
+var PREDICTED_NO_DEFECT PREDICTED_SUB_TYPE = PREDICTED_SUB_TYPE{
+	"typeRef":   "TO_INVESTIGATE",
+	"longName":  "Predicted No Defect",
+	"shortName": "TND",
+	"color":     "#C1BCB4",
 }

@@ -43,6 +43,14 @@ func SendHTTPRequest(method, url, auth_token string, body *bytes.Buffer, client 
 	if resp.StatusCode == 200 {
 		return d, err, true
 	} else {
-		return d, err, false
+		if method == "POST" {
+			if resp.StatusCode == 201 {
+				return d, err, true
+			}
+		} else {
+			fmt.Printf("status code is:%v\n", resp.StatusCode)
+			return d, err, false
+		}
 	}
+	return d, err, false
 }

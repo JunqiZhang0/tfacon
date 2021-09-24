@@ -49,13 +49,14 @@ type RPConnector struct {
 
 func (c *RPConnector) Validate(verbose bool) (bool, error) {
 	fmt.Print("Validating....\n")
-	validateRPURLAndAuthToken, err := c.validateRPURLAndAuthToken()
-	if verbose {
-		fmt.Printf("RPURLValidate: %t\n", validateRPURLAndAuthToken)
-	}
+	data, validateRPURLAndAuthToken, err := c.validateRPURLAndAuthToken()
+
 	if err != nil {
 		err = errors.Errorf("%s", err)
 		return false, err
+	}
+	if verbose {
+		fmt.Printf("RPURLValidate: %s\n", data)
 	}
 	validateTFA, err := c.validateTFAURL()
 	if verbose {
@@ -91,9 +92,9 @@ func (c *RPConnector) validateTFAURL() (bool, error) {
 	return success, err
 }
 
-func (c *RPConnector) validateRPURLAndAuthToken() (bool, error) {
-	_, err, success := common.SendHTTPRequest("GET", c.RPURL+"/api/v1/project/list", c.AuthToken, bytes.NewBuffer(nil), c.Client)
-	return success, err
+func (c *RPConnector) validateRPURLAndAuthToken() ([]byte, bool, error) {
+	data, err, success := common.SendHTTPRequest("GET", c.RPURL+"/api/v1/project/list", c.AuthToken, bytes.NewBuffer(nil), c.Client)
+	return data, success, err
 }
 
 func (c RPConnector) String() string {
@@ -180,7 +181,8 @@ func (c *RPConnector) BuildIssueItemHelper(id string, add_attributes bool) Issue
 	// Make logs to string(in []byte format)
 	log_after_marshal, _ := json.Marshal(logs)
 	// This can be the input of GetPrediction
-	var tfa_input common.TFAInput = c.BuildTFAInput(id, string(log_after_marshal))
+	testlog := string(log_after_marshal)
+	var tfa_input common.TFAInput = c.BuildTFAInput(id, testlog)
 	prediction_json := c.GetPrediction(id, tfa_input)
 	prediction := gjson.Get(prediction_json, "result.prediction").String()
 	// prediction_code := common.DEFECT_TYPE[prediction]
@@ -335,22 +337,26 @@ func (c *RPConnector) InitConnector() {
 	}
 	ti_sub := gjson.Get(string(data), "subTypes.TO_INVESTIGATE").Array()
 
-	for _, v := range common.PREDICTED_SUB_TYPES {
-		locator, ok := getExistingDefectTypeLocatorId(ti_sub, v["longName"])
+	for _, sub_type := range common.PREDICTED_SUB_TYPES {
+
+		locator, ok := getExistingDefectTypeLocatorId(ti_sub, sub_type["longName"])
 		if !ok {
-			d, _ := json.Marshal(v)
+			d, _ := json.Marshal(sub_type)
 			url := fmt.Sprintf("%s/api/v1/%s/settings/sub-type", c.RPURL, c.ProjectName)
 			method := "POST"
 			auth_token := c.AuthToken
 			body := bytes.NewBuffer(d)
-			data, err, _ := common.SendHTTPRequest(method, url, auth_token, body, c.Client)
+			data, err, success := common.SendHTTPRequest(method, url, auth_token, body, c.Client)
 
 			if err != nil {
 				panic(fmt.Errorf("read response body failed: %v", err))
 			}
-			v["locator"] = gjson.Get(string(data), "locator").String()
+			if !success {
+				panic(fmt.Errorf("creation of the defect type failed %v", string(data)))
+			}
+			sub_type["locator"] = gjson.Get(string(data), "locator").String()
 		} else {
-			v["locator"] = locator
+			sub_type["locator"] = locator
 		}
 	}
 }
