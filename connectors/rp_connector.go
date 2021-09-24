@@ -49,14 +49,14 @@ type RPConnector struct {
 
 func (c *RPConnector) Validate(verbose bool) (bool, error) {
 	fmt.Print("Validating....\n")
-	data, validateRPURLAndAuthToken, err := c.validateRPURLAndAuthToken()
+	_, validateRPURLAndAuthToken, err := c.validateRPURLAndAuthToken()
 
 	if err != nil {
 		err = errors.Errorf("%s", err)
 		return false, err
 	}
 	if verbose {
-		fmt.Printf("RPURLValidate: %s\n", data)
+		fmt.Printf("RPURLValidate: %t\n", validateRPURLAndAuthToken)
 	}
 	validateTFA, err := c.validateTFAURL()
 	if verbose {
