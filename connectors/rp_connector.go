@@ -3,6 +3,7 @@ package connectors
 import (
 	"bytes"
 	"encoding/json"
+	"strings"
 
 	"fmt"
 	"log"
@@ -40,6 +41,7 @@ func (u UpdatedList) GetSelf() common.GeneralUpdatedList {
 
 type RPConnector struct {
 	LaunchId    string `mapstructure:"LAUNCH_ID"`
+	LaunchName  string `mapstructure:"LAUNCH_NAME"`
 	ProjectName string `mapstructure:"PROJECT_NAME"`
 	AuthToken   string `mapstructure:"AUTH_TOKEN"`
 	RPURL       string `mapstructure:"PLATFORM_URL"`
@@ -74,15 +76,15 @@ func (c *RPConnector) Validate(verbose bool) (bool, error) {
 		err = errors.Errorf("%s", "You need to input project name")
 		return false, err
 	}
-	launchidNotEmpty := c.LaunchId != ""
+	launchinfoNotEmpty := c.LaunchId != "" || c.LaunchName != ""
 	if verbose {
-		fmt.Printf("lauchidValidate: %t\n", launchidNotEmpty)
+		fmt.Printf("lauchidValidate: %t\n", launchinfoNotEmpty)
 	}
-	if !launchidNotEmpty {
-		err = errors.Errorf("%s", "You need to input launch id")
+	if !launchinfoNotEmpty {
+		err = errors.Errorf("%s", "You need to input launch id or launch name")
 		return false, err
 	}
-	ret := validateRPURLAndAuthToken && validateTFA && projectnameNotEmpty && launchidNotEmpty
+	ret := validateRPURLAndAuthToken && validateTFA && projectnameNotEmpty && launchinfoNotEmpty
 	return ret, nil
 }
 
@@ -215,6 +217,9 @@ func (c *RPConnector) BuildIssueItemConcurrent(issuesChan chan<- IssueItem, idsC
 }
 
 func (c *RPConnector) GetIssueInfoForSingleTestId(id string) IssueInfo {
+	if c.LaunchId == "" {
+		c.LaunchId = c.GetLaunchID()
+	}
 	url := fmt.Sprintf("%s/api/v1/%s/item?filter.eq.id=%s&filter.eq.launchId=%s&isLatest=false&launchesLimit=0", c.RPURL, c.ProjectName, id, c.LaunchId)
 	method := "GET"
 	auth_token := c.AuthToken
@@ -252,6 +257,9 @@ func (c *RPConnector) BuildTFAInput(test_id, messages string) common.TFAInput {
 }
 
 func (c *RPConnector) GetAllTestIds() []string {
+	if c.LaunchId == "" {
+		c.LaunchId = c.GetLaunchID()
+	}
 	url := fmt.Sprintf("%s/api/v1/%s/item?filter.eq.issueType=ti001&filter.eq.launchId=%s&filter.eq.status=FAILED&isLatest=false&launchesLimit=0", c.RPURL, c.ProjectName, c.LaunchId)
 	method := "GET"
 	auth_token := c.AuthToken
@@ -270,6 +278,9 @@ func (c *RPConnector) GetAllTestIds() []string {
 }
 
 func (c *RPConnector) GetTestLog(test_id string) []string {
+	if c.LaunchId == "" {
+		c.LaunchId = c.GetLaunchID()
+	}
 	url := fmt.Sprintf("%s/api/v1/%s/log?filter.eq.item=%s&filter.eq.launchId=%s", c.RPURL, c.ProjectName, test_id, c.LaunchId)
 	method := "GET"
 	auth_token := c.AuthToken
@@ -359,4 +370,18 @@ func (c *RPConnector) InitConnector() {
 			sub_type["locator"] = locator
 		}
 	}
+}
+
+func (c *RPConnector) GetLaunchID() string {
+	launchinfo := strings.Split(c.LaunchName, "#")
+	url := fmt.Sprintf("%s/api/v1/%s/launch?filter.eq.name=%s&filter.eq.number=%s", c.RPURL, c.ProjectName, strings.TrimSpace(launchinfo[0]), launchinfo[1])
+	method := "GET"
+	auth_token := c.AuthToken
+	body := bytes.NewBuffer(nil)
+	data, err, _ := common.SendHTTPRequest(method, url, auth_token, body, c.Client)
+	if err != nil {
+		fmt.Print(fmt.Errorf("creation of the defect type failed %v", string(data)))
+	}
+	launchid := gjson.Get(string(data), "content.0.id").String()
+	return launchid
 }

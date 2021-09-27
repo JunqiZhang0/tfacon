@@ -48,6 +48,12 @@ var cmdInfoList []map[string]string = []map[string]string{
 		"defaultVal":     "",
 		"cmdDescription": "The AUTH_TOKEN of report portal",
 	},
+	{
+		"cmdName":        "launch-name",
+		"valName":        "LAUNCH_NAME",
+		"defaultVal":     "",
+		"cmdDescription": "The launch name of the launch in report portal",
+	},
 }
 
 func initConfig(viper *viper.Viper, cmd *cobra.Command, cmdInfoList []map[string]string) {
