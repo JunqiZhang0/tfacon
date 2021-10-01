@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/JunqiZhang0/tfacon/connectors"
-
 	"github.com/JunqiZhang0/tfacon/common"
-
+	"github.com/JunqiZhang0/tfacon/connectors"
 	"github.com/spf13/viper"
 )
 
@@ -22,11 +20,8 @@ type TFACon interface {
 
 func Run(viperRun, viperConfig *viper.Viper) {
 	var con TFACon = GetCon(viperRun)
-	// fmt.Printf("%+v\n", con)
-	// fmt.Println("===========================")
 	con.InitConnector()
 	runHelper(viperConfig, con.GetAllTestIds(), con)
-
 }
 
 func runHelper(viperConfig *viper.Viper, ids []string, con TFACon) {
