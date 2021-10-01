@@ -1,14 +1,16 @@
 run:
-  tests: false
+  tests: true
 linters:
   enable-all: true
   disable:
-    - godox
-    - typecheck
-    - errcheck
+    # - godox
+    # - typecheck
+    # - errcheck
+    - forbidigo
 issues:
   exclude-use-default: false
   exclude-rules:
     - linters:
       - gosec
+      - forbidigo
       text: "G107"

@@ -9,6 +9,9 @@ import (
 	"github.com/spf13/viper"
 )
 
+// TFACon is the general interface for all TFA Classifer
+// connectors, any connector to any test management platform
+// should inpement this interface.
 type TFACon interface {
 	GetAllTestIds() []string
 	BuildUpdatedList(ids []string, concurrent bool, add_attributes bool) common.GeneralUpdatedList
@@ -18,6 +21,8 @@ type TFACon interface {
 	Validate(verbose bool) (bool, error)
 }
 
+// Run method is the run operation for any type of connector that
+// implements TFACon interface.
 func Run(viperRun, viperConfig *viper.Viper) {
 	var con TFACon = GetCon(viperRun)
 	con.InitConnector()
@@ -34,17 +39,23 @@ func runHelper(viperConfig *viper.Viper, ids []string, con TFACon) {
 	runHelper(viperConfig, con.GetAllTestIds(), con)
 }
 
+// GetInfo method is the get info operation for any type of connector that
+// implements TFACon interface.
 func GetInfo(viper *viper.Viper) TFACon {
-	var con TFACon = GetCon(viper)
+	con := GetCon(viper)
 	return con
 }
 
+// Validate method is the validate operation for any type of connector that
+// implements TFACon interface.
 func Validate(con TFACon, viper *viper.Viper) (bool, error) {
 	// var con TFACon = GetCon(viper)
 	success, err := con.Validate(viper.GetBool("config.verbose"))
 	return success, err
 }
 
+// GetCon method is the get con operation for any type of connector that
+// implements TFACon interface, it returns the actual tfa connector instance.
 func GetCon(viper *viper.Viper) TFACon {
 	var con TFACon
 	switch viper.Get("CONNECTOR_TYPE") {

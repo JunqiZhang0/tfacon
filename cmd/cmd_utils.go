@@ -1,3 +1,4 @@
+// Package cmd is the package for all command line related things
 package cmd
 
 import (
@@ -7,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 
+	"github.com/JunqiZhang0/tfacon/common"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -57,28 +59,26 @@ var cmdInfoList []map[string]string = []map[string]string{
 }
 
 func initConfig(viper *viper.Viper, cmd *cobra.Command, cmdInfoList []map[string]string) {
-
 	viper.AddConfigPath(".")
 	viper.SetConfigName("tfacon")
 	viper.AutomaticEnv()
 
 	for _, v := range cmdInfoList {
-
 		initViperVal(cmd, viper, v["cmdName"], v["valName"], v["defaultVal"], v["cmdDescription"])
 	}
-	viper.ReadInConfig()
+	err := viper.ReadInConfig()
+	common.HandleError(err)
 }
 
 func initViperVal(cmd *cobra.Command, viper *viper.Viper, cmdName, valName, defaultVal, cmdDescription string) {
-
 	if viper.GetString(valName) == "" {
 		viper.SetDefault(valName, defaultVal)
 	} else {
 		viper.SetDefault(valName, viper.GetString(valName))
 	}
 	cmd.PersistentFlags().StringP(cmdName, "", viper.GetString(valName), cmdDescription)
-	viper.BindPFlag(valName, cmd.PersistentFlags().Lookup(cmdName))
-
+	err := viper.BindPFlag(valName, cmd.PersistentFlags().Lookup(cmdName))
+	common.HandleError(err)
 }
 
 func initTFAConfigFile(viper *viper.Viper) {
@@ -91,45 +91,42 @@ func initTFAConfigFile(viper *viper.Viper) {
 	}
 	defer func() {
 		if r := recover(); r != nil {
-			os.Create("tfacon.cfg")
+			_, err = os.Create("tfacon.cfg")
+			common.HandleError(err)
 		}
 	}()
-	if err != nil {
-		panic(err)
-	}
+	common.HandleError(err)
 	viper.SetConfigType("ini")
 	viper.SetDefault("config.concurrency", true)
 	viper.SetDefault("config.retry_times", 1)
 	viper.SetDefault("config.add_attributes", false)
-	viper.ReadConfig(bytes.NewBuffer(file))
+	err = viper.ReadConfig(bytes.NewBuffer(file))
+	common.HandleError(err)
 	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "You can add this tag to print more detailed info")
-	viper.BindPFlag("config.verbose", rootCmd.PersistentFlags().Lookup("verbose"))
+	err = viper.BindPFlag("config.verbose", rootCmd.PersistentFlags().Lookup("verbose"))
+	common.HandleError(err)
 }
 
 func initWorkspace() {
 	pwd, err := os.Getwd()
-	if err != nil {
-		fmt.Println(err)
-	}
+	common.HandleError(err)
+	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "You can add this tag to print more detailed info")
 	fmt.Println(pwd)
-	os.Mkdir("tfacon_workspace", 0700)
-	os.Mkdir("/tmp/.tfacon", 0700)
-	os.Chdir("/tmp/.tfacon/")
+	err = os.Mkdir("tfacon_workspace", 0700)
+	common.HandleError(err)
+	err = os.Mkdir("/tmp/.tfacon", 0700)
+	common.HandleError(err)
+	err = os.Chdir("/tmp/.tfacon/")
+	common.HandleError(err)
 	cmd := exec.Command("git", "clone", "https://github.com/JunqiZhang0/tfacon.git")
 	err = cmd.Run()
-	if err != nil {
-		fmt.Println(err)
-	}
-	os.Chdir("/tmp/.tfacon/tfacon")
+	common.HandleError(err)
+	err = os.Chdir("/tmp/.tfacon/tfacon")
+	common.HandleError(err)
 	cmd = exec.Command("mv", "examples", pwd+"/tfacon_workspace")
 	err = cmd.Run()
-	if err != nil {
-		fmt.Println(err)
-	}
+	common.HandleError(err)
 	cmd = exec.Command("rm", "/tmp/.tfacon", "-rf")
 	err = cmd.Run()
-	if err != nil {
-		fmt.Println(err)
-	}
-
+	common.HandleError(err)
 }

@@ -13,6 +13,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
+// Package cmd is the package for all command line related things
 package cmd
 
 import (
@@ -24,7 +26,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-// validateCmd represents the validate command
+// validateCmd represents the validate command.
 var validateCmd = &cobra.Command{
 	Use:   "validate",
 	Short: "validate if the parameter is valid and if the urls are accesible",

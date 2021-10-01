@@ -13,17 +13,18 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
+// Package cmd is the package for all command line related things
 package cmd
 
 import (
 	"github.com/JunqiZhang0/tfacon/common"
 	"github.com/JunqiZhang0/tfacon/core"
-
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-// runCmd represents the run command
+// runCmd represents the run command.
 var runCmd = &cobra.Command{
 	Use:   "run",
 	Short: "run the info retrival and get the pridiction from TFA",

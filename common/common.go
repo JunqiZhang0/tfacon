@@ -1,19 +1,25 @@
-// common package contains all shared structs(data structures) required for all connectors
+// Package common contains all shared structs(data structures) required for all connectors
 package common
 
 // GeneralUpdatedList is an updated list of object, with the prediction from TFA classifier
 // each connector should have it's own UpdatedList structure and implement the
-// GeneralUpdatedList interface
+// GeneralUpdatedList interface.
 type GeneralUpdatedList interface {
 	GetSelf() GeneralUpdatedList
 }
 
-type TFAModel map[string]TFAInput
-type TFAInput struct {
-	Id       string `json:"id"`
-	Project  string `json:"project"`
-	Messages string `json:"messages"`
-}
+type (
+	// TFAModel is the data structure for describing
+	// the request body for TFA Classifer.
+	TFAModel map[string]TFAInput
+	// TFAInput is the data structure for describing
+	// the three input params for TFA Classifier.
+	TFAInput struct {
+		ID       string `json:"id"`
+		Project  string `json:"project"`
+		Messages string `json:"messages"`
+	}
+)
 
 var TFA_DEFECT_TYPE_TO_SUB_TYPE map[string]PREDICTED_SUB_TYPE = map[string]PREDICTED_SUB_TYPE{
 	"Automation Bug": PREDICTED_AUTOMATION_BUG,

@@ -3,26 +3,30 @@ package connectors
 import (
 	"bytes"
 	"encoding/json"
-	"strings"
-
 	"fmt"
 	"log"
 	"net/http"
 	"reflect"
+	"strings"
 
 	"github.com/JunqiZhang0/tfacon/common"
 	"github.com/pkg/errors"
-
 	"github.com/tidwall/gjson"
 )
 
+// Issues is a list of IssueItem.
 type Issues []IssueItem
 
+// IssueItem is a smallest unit
+// in the reuquest body for describing
+// the issue to be updated.
 type IssueItem struct {
 	Issue      IssueInfo `json:"issue"`
-	TestItemId string    `json:"testItemId"`
+	TestItemID string    `json:"testItemId"`
 }
 
+// IssueInfo is the data structure describing
+// the issue information for the request body.
 type IssueInfo struct {
 	IssueType            string        `json:"issueType"`
 	Comment              string        `json:"comment"`
@@ -31,16 +35,22 @@ type IssueInfo struct {
 	ExternalSystemIssues []interface{} `json:"externalSystemIssues"`
 }
 
+// UpdatedList is the finished final list
+// of the request body that contains all finalized
+// information about issues(test items).
 type UpdatedList struct {
 	IssuesList Issues `json:"issues"`
 }
 
+// GetSelf method returns an GenralUpdatedlist.
 func (u UpdatedList) GetSelf() common.GeneralUpdatedList {
 	return u
 }
 
+// RPConnector is the class for describing
+// the RPConnector engine.
 type RPConnector struct {
-	LaunchId    string `mapstructure:"LAUNCH_ID"`
+	LaunchID    string `mapstructure:"LAUNCH_ID"`
 	LaunchName  string `mapstructure:"LAUNCH_NAME"`
 	ProjectName string `mapstructure:"PROJECT_NAME"`
 	AuthToken   string `mapstructure:"AUTH_TOKEN"`
@@ -49,10 +59,11 @@ type RPConnector struct {
 	TFAURL      string `mapstructure:"TFA_URL"`
 }
 
+// Validate method validates against the input from
+// yaml file, cli flag, and environment variable.
 func (c *RPConnector) Validate(verbose bool) (bool, error) {
 	fmt.Print("Validating....\n")
 	_, validateRPURLAndAuthToken, err := c.validateRPURLAndAuthToken()
-
 	if err != nil {
 		err = errors.Errorf("%s", err)
 		return false, err
@@ -76,7 +87,7 @@ func (c *RPConnector) Validate(verbose bool) (bool, error) {
 		err = errors.Errorf("%s", "You need to input project name")
 		return false, err
 	}
-	launchinfoNotEmpty := c.LaunchId != "" || c.LaunchName != ""
+	launchinfoNotEmpty := c.LaunchID != "" || c.LaunchName != ""
 	if verbose {
 		fmt.Printf("lauchidValidate: %t\n", launchinfoNotEmpty)
 	}
@@ -90,25 +101,30 @@ func (c *RPConnector) Validate(verbose bool) (bool, error) {
 
 func (c *RPConnector) validateTFAURL() (bool, error) {
 	body := `{"data": {"id": "123", "project": "rhv", "messages": ""}}`
-	_, err, success := common.SendHTTPRequest("POST", c.TFAURL, "", bytes.NewBuffer([]byte(body)), c.Client)
+	_, success, err := common.SendHTTPRequest(http.MethodPost, c.TFAURL, "", bytes.NewBuffer([]byte(body)), c.Client)
 	return success, err
 }
 
 func (c *RPConnector) validateRPURLAndAuthToken() ([]byte, bool, error) {
-	data, err, success := common.SendHTTPRequest("GET", c.RPURL+"/api/v1/project/list", c.AuthToken, bytes.NewBuffer(nil), c.Client)
+	data, success, err := common.SendHTTPRequest(http.MethodGet,
+		c.RPURL+"/api/v1/project/list", c.AuthToken, bytes.NewBuffer(nil), c.Client)
 	return data, success, err
 }
 
+// String method is a to string method for the
+// RPConnector instance.
 func (c RPConnector) String() string {
 	v := reflect.ValueOf(c)
 	typeOfS := v.Type()
 	str := ""
 	for i := 0; i < v.NumField(); i++ {
-		str = str + fmt.Sprintf("%s: \t %v\n", typeOfS.Field(i).Name, v.Field(i).Interface())
+		str += fmt.Sprintf("%s: \t %v\n", typeOfS.Field(i).Name, v.Field(i).Interface())
 	}
 	return str
 }
 
+// UpdateAll method is the interface method for tfacon interface
+// it update the test items with the built updated_list.
 func (c *RPConnector) UpdateAll(updated_list_of_issues common.GeneralUpdatedList, verbose bool) {
 	if len(updated_list_of_issues.GetSelf().(UpdatedList).IssuesList) == 0 {
 		return
@@ -119,7 +135,7 @@ func (c *RPConnector) UpdateAll(updated_list_of_issues common.GeneralUpdatedList
 	method := "PUT"
 	auth_token := c.AuthToken
 	body := bytes.NewBuffer(json_updated_list_of_issues)
-	data, err, success := common.SendHTTPRequest(method, url, auth_token, body, c.Client)
+	data, success, err := common.SendHTTPRequest(method, url, auth_token, body, c.Client)
 	if err != nil {
 		panic(fmt.Sprintf("Updated All failed: %s", err))
 	}
@@ -133,32 +149,33 @@ func (c *RPConnector) UpdateAll(updated_list_of_issues common.GeneralUpdatedList
 	} else {
 		common.PrintRed("Updated Failed!")
 	}
-
 }
 
+// BuildUpdatedList method is a interface method for tfacon interface
+// it builds a list of issues, it returns GeneralUpdatedList.
 func (c *RPConnector) BuildUpdatedList(ids []string, concurrent bool, add_attributes bool) common.GeneralUpdatedList {
 	return UpdatedList{IssuesList: c.BuildIssues(ids, concurrent, add_attributes)}
-
 }
 
+// BuildIssues method build the issue struct.
 func (c *RPConnector) BuildIssues(ids []string, concurrent bool, add_attributes bool) Issues {
-	var issues Issues = Issues{}
+	issues := Issues{}
 	if concurrent {
 		return c.BuildIssuesConcurrent(ids, add_attributes)
-	} else {
-		for _, id := range ids {
-			issues = append(issues, c.BuildIssueItemHelper(id, add_attributes))
-			log.Printf("Getting prediction of test item(id): %s\n", id)
-		}
-		return issues
 	}
+	for _, id := range ids {
+		issues = append(issues, c.BuildIssueItemHelper(id, add_attributes))
+		log.Printf("Getting prediction of test item(id): %s\n", id)
+	}
+	return issues
 }
 
+// BuildIssuesConcurrent methods builds the issues struct concurrently.
 func (c *RPConnector) BuildIssuesConcurrent(ids []string, add_attributes bool) Issues {
-	var issues Issues = Issues{}
-	var issuesChan chan IssueItem = make(chan IssueItem, len(ids))
-	var idsChan chan string = make(chan string, len(ids))
-	var exitChan chan bool = make(chan bool, len(ids))
+	issues := Issues{}
+	issuesChan := make(chan IssueItem, len(ids))
+	idsChan := make(chan string, len(ids))
+	exitChan := make(chan bool, len(ids))
 	go func() {
 		for _, id := range ids {
 			idsChan <- id
@@ -178,6 +195,8 @@ func (c *RPConnector) BuildIssuesConcurrent(ids []string, add_attributes bool) I
 	return issues
 }
 
+// BuildIssueItemHelper method is a helper method for building
+// the issue item struct.
 func (c *RPConnector) BuildIssueItemHelper(id string, add_attributes bool) IssueItem {
 	logs := c.GetTestLog(id)
 	// Make logs to string(in []byte format)
@@ -190,19 +209,18 @@ func (c *RPConnector) BuildIssueItemHelper(id string, add_attributes bool) Issue
 	// prediction_code := common.DEFECT_TYPE[prediction]
 	prediction_code := common.TFA_DEFECT_TYPE_TO_SUB_TYPE[prediction]["locator"]
 	// fmt.Println(prediction_code)
-	var issue_info IssueInfo = c.GetIssueInfoForSingleTestId(id)
+	var issue_info IssueInfo = c.GetIssueInfoForSingleTestID(id)
 	issue_info.IssueType = prediction_code
-	var issue_item IssueItem = IssueItem{Issue: issue_info, TestItemId: id}
+	var issue_item IssueItem = IssueItem{Issue: issue_info, TestItemID: id}
 	if add_attributes {
 		prediction_name := common.TFA_DEFECT_TYPE_TO_SUB_TYPE[prediction]["longName"]
 		err := c.updateAttributesForPrediction(id, prediction_name)
-		if err != nil {
-			panic(err)
-		}
+		common.HandleError(err)
 	}
 	return issue_item
 }
 
+// BuildIssueItemConcurrent method builds Issue Item Concurrently.
 func (c *RPConnector) BuildIssueItemConcurrent(issuesChan chan<- IssueItem, idsChan <-chan string, exitChan chan<- bool, add_attributes bool) {
 	for {
 		id, ok := <-idsChan
@@ -216,25 +234,26 @@ func (c *RPConnector) BuildIssueItemConcurrent(issuesChan chan<- IssueItem, idsC
 	exitChan <- true
 }
 
-func (c *RPConnector) GetIssueInfoForSingleTestId(id string) IssueInfo {
-	if c.LaunchId == "" {
-		c.LaunchId = c.GetLaunchID()
+// GetIssueInfoForSingleTestId method returns the issueinfo with the issue(test item) id.
+func (c *RPConnector) GetIssueInfoForSingleTestID(id string) IssueInfo {
+	if c.LaunchID == "" {
+		c.LaunchID = c.GetLaunchID()
 	}
-	url := fmt.Sprintf("%s/api/v1/%s/item?filter.eq.id=%s&filter.eq.launchId=%s&isLatest=false&launchesLimit=0", c.RPURL, c.ProjectName, id, c.LaunchId)
-	method := "GET"
+	url := fmt.Sprintf("%s/api/v1/%s/item?filter.eq.id=%s&filter.eq.launchId=%s&isLatest=false&launchesLimit=0",
+		c.RPURL, c.ProjectName, id, c.LaunchID)
+	method := http.MethodGet
 	auth_token := c.AuthToken
 	body := bytes.NewBuffer(nil)
-	data, err, _ := common.SendHTTPRequest(method, url, auth_token, body, c.Client)
-	if err != nil {
-		panic(err)
-	}
+	data, _, err := common.SendHTTPRequest(method, url, auth_token, body, c.Client)
+	common.HandleError(err)
 	issue_info_str := gjson.Get(string(data), "content.0.issue").String()
 	var issue_info IssueInfo
-	json.Unmarshal([]byte(issue_info_str), &issue_info)
+	err = json.Unmarshal([]byte(issue_info_str), &issue_info)
+	common.HandleError(err)
 	return issue_info
-
 }
 
+// GetPrediction method returns the prediction extracted from the TFA Classifier.
 func (c *RPConnector) GetPrediction(id string, tfa_input common.TFAInput) string {
 	tfa_model := common.TFAModel{"data": tfa_input}
 	model, err := json.Marshal(tfa_model)
@@ -242,32 +261,33 @@ func (c *RPConnector) GetPrediction(id string, tfa_input common.TFAInput) string
 		panic(fmt.Errorf("%s", err))
 	}
 	url := c.TFAURL
-	method := "POST"
+	method := http.MethodPost
 	auth_token := c.AuthToken
 	body := bytes.NewBuffer(model)
-	data, err, _ := common.SendHTTPRequest(method, url, auth_token, body, c.Client)
+	data, _, err := common.SendHTTPRequest(method, url, auth_token, body, c.Client)
 	if err != nil {
 		panic(err)
 	}
 	return string(data)
 }
 
+// BuildTFAInput method builds the TFAInput struct with the test id and messages.
 func (c *RPConnector) BuildTFAInput(test_id, messages string) common.TFAInput {
-	return common.TFAInput{Id: test_id, Project: c.ProjectName, Messages: messages}
+	return common.TFAInput{ID: test_id, Project: c.ProjectName, Messages: messages}
 }
 
+// GetAllTestIds returns all test ids from inside a test launch.
 func (c *RPConnector) GetAllTestIds() []string {
-	if c.LaunchId == "" {
-		c.LaunchId = c.GetLaunchID()
+	if c.LaunchID == "" {
+		c.LaunchID = c.GetLaunchID()
 	}
-	url := fmt.Sprintf("%s/api/v1/%s/item?filter.eq.issueType=ti001&filter.eq.launchId=%s&filter.eq.status=FAILED&isLatest=false&launchesLimit=0", c.RPURL, c.ProjectName, c.LaunchId)
-	method := "GET"
+	url := fmt.Sprintf("%s/api/v1/%s/item?filter.eq.issueType=ti001&filter.eq.launchId=%s&filter.eq.status=FAILED&isLatest=false&launchesLimit=0",
+		c.RPURL, c.ProjectName, c.LaunchID)
+	method := http.MethodGet
 	auth_token := c.AuthToken
 	body := bytes.NewBuffer(nil)
-	data, err, _ := common.SendHTTPRequest(method, url, auth_token, body, c.Client)
-	if err != nil {
-		panic(err)
-	}
+	data, _, err := common.SendHTTPRequest(method, url, auth_token, body, c.Client)
+	common.HandleError(err)
 	a := gjson.Get(string(data), "content")
 	var ret []string
 	a.ForEach(func(_, m gjson.Result) bool {
@@ -277,18 +297,18 @@ func (c *RPConnector) GetAllTestIds() []string {
 	return ret
 }
 
+// GetTestLog returns the test log(test msg) for a test item.
 func (c *RPConnector) GetTestLog(test_id string) []string {
-	if c.LaunchId == "" {
-		c.LaunchId = c.GetLaunchID()
+	if c.LaunchID == "" {
+		c.LaunchID = c.GetLaunchID()
 	}
-	url := fmt.Sprintf("%s/api/v1/%s/log?filter.eq.item=%s&filter.eq.launchId=%s", c.RPURL, c.ProjectName, test_id, c.LaunchId)
-	method := "GET"
+	url := fmt.Sprintf("%s/api/v1/%s/log?filter.eq.item=%s&filter.eq.launchId=%s",
+		c.RPURL, c.ProjectName, test_id, c.LaunchID)
+	method := http.MethodGet
 	auth_token := c.AuthToken
 	body := bytes.NewBuffer(nil)
-	data, err, _ := common.SendHTTPRequest(method, url, auth_token, body, c.Client)
-	if err != nil {
-		panic(err)
-	}
+	data, _, err := common.SendHTTPRequest(method, url, auth_token, body, c.Client)
+	common.HandleError(err)
 	a := gjson.Get(string(data), "content")
 	var ret []string
 	a.ForEach(func(_, m gjson.Result) bool {
@@ -305,25 +325,23 @@ func (c *RPConnector) updateAttributesForPrediction(id, prediction string) error
 		"attributes": {
 			attribute{
 				"key":   "AI Prediction",
-				"value": prediction},
+				"value": prediction,
+			},
 		},
 	}
 	url := fmt.Sprintf("%s/api/v1/%s/item/%s/update", c.RPURL, c.ProjectName, id)
-	method := "PUT"
+	method := http.MethodPut
 	auth_token := c.AuthToken
 	d, err := json.Marshal(updated_attribute)
-	if err != nil {
-		panic(err)
-	}
+	common.HandleError(err)
 	body := bytes.NewBuffer(d)
-	_, err, _ = common.SendHTTPRequest(method, url, auth_token, body, c.Client)
+	_, _, err = common.SendHTTPRequest(method, url, auth_token, body, c.Client)
 	// fmt.Printf("This is the return from updating attributes: %s\n", string(data))
 	log.Printf("Updated the test item(id): %s with it's prediction %s\n", id, prediction)
 	return err
-
 }
 
-func getExistingDefectTypeLocatorId(gjson_obj []gjson.Result, defect_type string) (string, bool) {
+func getExistingDefectTypeLocatorID(gjson_obj []gjson.Result, defect_type string) (string, bool) {
 	for _, v := range gjson_obj {
 		defect_type_info := v.Map()
 		if defect_type_info["longName"].String() == defect_type {
@@ -333,32 +351,30 @@ func getExistingDefectTypeLocatorId(gjson_obj []gjson.Result, defect_type string
 	return "", false
 }
 
+// InitConnector create defect types before doing all sync/update job
+// this method will run before everything.
 func (c *RPConnector) InitConnector() {
 	fmt.Println("Initializing Defect Types...")
 	url := fmt.Sprintf("%s/api/v1/%s/settings", c.RPURL, c.ProjectName)
-	method := "GET"
+	method := http.MethodGet
 	auth_token := c.AuthToken
 	body := bytes.NewBuffer(nil)
-	data, err, success := common.SendHTTPRequest(method, url, auth_token, body, c.Client)
-	if err != nil {
-		panic(err)
-	}
+	data, success, err := common.SendHTTPRequest(method, url, auth_token, body, c.Client)
+	common.HandleError(err)
 	if !success {
 		panic(fmt.Errorf("created defect types failed, please use superadmin auth_token"))
 	}
 	ti_sub := gjson.Get(string(data), "subTypes.TO_INVESTIGATE").Array()
 
 	for _, sub_type := range common.PREDICTED_SUB_TYPES {
-
-		locator, ok := getExistingDefectTypeLocatorId(ti_sub, sub_type["longName"])
+		locator, ok := getExistingDefectTypeLocatorID(ti_sub, sub_type["longName"])
 		if !ok {
 			d, _ := json.Marshal(sub_type)
 			url := fmt.Sprintf("%s/api/v1/%s/settings/sub-type", c.RPURL, c.ProjectName)
-			method := "POST"
+			method := http.MethodPost
 			auth_token := c.AuthToken
 			body := bytes.NewBuffer(d)
-			data, err, success := common.SendHTTPRequest(method, url, auth_token, body, c.Client)
-
+			data, success, err := common.SendHTTPRequest(method, url, auth_token, body, c.Client)
 			if err != nil {
 				panic(fmt.Errorf("read response body failed: %v", err))
 			}
@@ -372,13 +388,16 @@ func (c *RPConnector) InitConnector() {
 	}
 }
 
+// GetLaunchID returns launch id with the launch name
+// this method will be called when user don't have launchid input.
 func (c *RPConnector) GetLaunchID() string {
 	launchinfo := strings.Split(c.LaunchName, "#")
-	url := fmt.Sprintf("%s/api/v1/%s/launch?filter.eq.name=%s&filter.eq.number=%s", c.RPURL, c.ProjectName, strings.TrimSpace(launchinfo[0]), launchinfo[1])
-	method := "GET"
+	url := fmt.Sprintf("%s/api/v1/%s/launch?filter.eq.name=%s&filter.eq.number=%s",
+		c.RPURL, c.ProjectName, strings.TrimSpace(launchinfo[0]), launchinfo[1])
+	method := http.MethodGet
 	auth_token := c.AuthToken
 	body := bytes.NewBuffer(nil)
-	data, err, _ := common.SendHTTPRequest(method, url, auth_token, body, c.Client)
+	data, _, err := common.SendHTTPRequest(method, url, auth_token, body, c.Client)
 	if err != nil {
 		fmt.Print(fmt.Errorf("creation of the defect type failed %v", string(data)))
 	}

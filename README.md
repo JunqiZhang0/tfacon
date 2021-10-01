@@ -68,7 +68,7 @@ Copyright (C) 2021, Red Hat, Inc.
 
 
 2021/08/06 03:21:33 Printing the constructed information
-LaunchId:        968
+LaunchID:        968
 ProjectName:     TFA_RP
 AuthToken:       xxxx-xxxx-xxxxxxx-xxxxxx-xxxxxxxxx
 RPURL:           https://reportportal.com
@@ -133,7 +133,7 @@ Global Flags:
 Example Output
 ```bash
 ❯ tfacon validate --project-name "TFACON" --launch-id 231
-LaunchId:        231
+LaunchID:        231
 ProjectName:     TFACON
 AuthToken:       xxxxxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx
 RPURL:           https://reportportal-dev.com

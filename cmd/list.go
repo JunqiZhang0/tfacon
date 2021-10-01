@@ -13,6 +13,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
+// Package cmd is the package for all command line related things
 package cmd
 
 import (
@@ -24,11 +26,11 @@ import (
 	"github.com/spf13/viper"
 )
 
-// listCmd represents the list command
+// listCmd represents the list command.
 var listCmd = &cobra.Command{
 	Use:   "list",
 	Short: "list all constructed information",
-	Long:  `list all information constructed from tfacon.yml/enviroment variables/cli`,
+	Long:  `list all information constructed from tfacon.yml/environment variables/cli`,
 	Run: func(cmd *cobra.Command, args []string) {
 		common.PrintHeader(rootCmd.Version)
 		log.Println("Printing the constructed information")
