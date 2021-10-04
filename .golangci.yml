@@ -3,9 +3,6 @@ run:
 linters:
   enable-all: true
   disable:
-    # - godox
-    # - typecheck
-    # - errcheck
     - forbidigo
     - stylecheck
     - gochecknoinits
