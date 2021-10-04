@@ -38,6 +38,7 @@ var viperRun *viper.Viper
 
 func init() {
 	rootCmd.AddCommand(runCmd)
+
 	viperRun = viper.New()
 	initConfig(viperRun, runCmd, cmdInfoList)
 }

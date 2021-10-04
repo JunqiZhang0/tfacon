@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/JunqiZhang0/tfacon/common"
 	"github.com/JunqiZhang0/tfacon/connectors"
 	"github.com/spf13/viper"
 )
@@ -54,9 +55,11 @@ func TestGetCon(t *testing.T) {
 	// vipertfaconfortest.SetConfigFile("yaml")
 	vipertfaconfortest.SetConfigName("tfacon")
 	vipertfaconfortest.AddConfigPath("../test_data/workspace_data")
-	vipertfaconfortest.ReadInConfig()
+	err := vipertfaconfortest.ReadInConfig()
+	common.HandleError(err)
 	rpcon := &connectors.RPConnector{Client: &http.Client{}}
-	vipertfaconfortest.Unmarshal(rpcon)
+	err = vipertfaconfortest.Unmarshal(rpcon)
+	common.HandleError(err)
 	type args struct {
 		viper *viper.Viper
 	}

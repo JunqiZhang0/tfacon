@@ -42,6 +42,7 @@ var viperList *viper.Viper
 
 func init() {
 	rootCmd.AddCommand(listCmd)
+
 	viperList = viper.New()
 	initConfig(viperList, listCmd, cmdInfoList)
 }

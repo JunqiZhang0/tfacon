@@ -25,6 +25,7 @@ type TFACon interface {
 // implements TFACon interface.
 func Run(viperRun, viperConfig *viper.Viper) {
 	var con TFACon = GetCon(viperRun)
+
 	con.InitConnector()
 	runHelper(viperConfig, con.GetAllTestIds(), con)
 }
@@ -33,7 +34,9 @@ func runHelper(viperConfig *viper.Viper, ids []string, con TFACon) {
 	if len(ids) == 0 {
 		return
 	}
-	updated_list_of_issues := con.BuildUpdatedList(ids, viperConfig.GetBool("config.concurrency"), viperConfig.GetBool("config.add_attributes"))
+
+	updated_list_of_issues := con.BuildUpdatedList(ids, viperConfig.GetBool("config.concurrency"),
+		viperConfig.GetBool("config.add_attributes"))
 	// Doing this because the api can only take 20 items per request
 	con.UpdateAll(updated_list_of_issues, viperConfig.GetBool("config.verbose"))
 	runHelper(viperConfig, con.GetAllTestIds(), con)
@@ -43,6 +46,7 @@ func runHelper(viperConfig *viper.Viper, ids []string, con TFACon) {
 // implements TFACon interface.
 func GetInfo(viper *viper.Viper) TFACon {
 	con := GetCon(viper)
+
 	return con
 }
 
@@ -50,7 +54,11 @@ func GetInfo(viper *viper.Viper) TFACon {
 // implements TFACon interface.
 func Validate(con TFACon, viper *viper.Viper) (bool, error) {
 	// var con TFACon = GetCon(viper)
-	success, err := con.Validate(viper.GetBool("config.verbose"))
+	success, err := con.(*connectors.RPConnector).Validate(viper.GetBool("config.verbose"))
+	if err != nil {
+		err = fmt.Errorf("validate error: %w", err)
+	}
+
 	return success, err
 }
 
@@ -58,23 +66,24 @@ func Validate(con TFACon, viper *viper.Viper) (bool, error) {
 // implements TFACon interface, it returns the actual tfa connector instance.
 func GetCon(viper *viper.Viper) TFACon {
 	var con TFACon
+
 	switch viper.Get("CONNECTOR_TYPE") {
 	case "RPCon":
 		con = &connectors.RPConnector{Client: &http.Client{}}
 		err := viper.Unmarshal(con)
-		if err != nil {
-			fmt.Println(err)
-		}
+
+		common.HandleError(err)
 	// case "POLCon":
 	// 	con = RPConnector{}
 	// case "JiraCon":
 	// 	con = RPConnector{}
 	default:
 		con = &connectors.RPConnector{Client: &http.Client{}}
+
 		err := viper.Unmarshal(con)
-		if err != nil {
-			fmt.Println(err)
-		}
+
+		common.HandleError(err)
 	}
+
 	return con
 }

@@ -1,8 +1,9 @@
 package common
 
 import (
-	"bytes"
+	"context"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 
@@ -33,9 +34,12 @@ func PrintHeader(version string) {
 
 // SendHTTPRequest is a helper function that
 // deals with all http operation for tfacon.
-func SendHTTPRequest(method, url, auth_token string, body *bytes.Buffer, client *http.Client) ([]byte, bool, error) {
-	req, err := http.NewRequest(method, url, body)
+func SendHTTPRequest(ctx context.Context, method, url,
+	auth_token string, body io.Reader, client *http.Client) ([]byte, bool, error) {
+	req, err := http.NewRequestWithContext(ctx, method, url, body)
 	req.Header.Add("Authorization", fmt.Sprintf("bearer %s", auth_token))
+
+	err = fmt.Errorf("tfacon http handler crashed, request built failed, could be a bad request: %w", err)
 	if err != nil {
 		return nil, false, err
 	}
@@ -45,21 +49,36 @@ func SendHTTPRequest(method, url, auth_token string, body *bytes.Buffer, client 
 	req.Header.Add("Accept", "application/json")
 
 	resp, err := client.Do(req)
+
+	defer func() {
+		err = req.Body.Close()
+		HandleError(err)
+		err = resp.Body.Close()
+		HandleError(err)
+	}()
+
+	err = fmt.Errorf("tfacon http handler crashed:%w", err)
 	if err != nil {
 		return nil, false, err
 	}
+
 	d, err := ioutil.ReadAll(resp.Body)
+	err = fmt.Errorf("tfacon http handler crashed, response read failed:%w", err)
+
 	if err != nil {
 		return nil, false, err
 	}
-	if resp.StatusCode == 200 {
+
+	if resp.StatusCode == http.StatusOK {
 		return d, true, err
 	}
-	if method == "POST" && resp.StatusCode == 201 {
+
+	if method == "POST" && resp.StatusCode == http.StatusCreated {
 		return d, true, err
 	}
 
 	fmt.Printf("status code is:%v\n", resp.StatusCode)
+
 	return d, false, err
 }
 
@@ -67,6 +86,6 @@ func SendHTTPRequest(method, url, auth_token string, body *bytes.Buffer, client 
 // for the whole tfacon.
 func HandleError(err error) {
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 }

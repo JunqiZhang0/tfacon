@@ -63,5 +63,4 @@ func init() {
 	initTFAConfigFile(viperConfig)
 	err := viperConfig.Unmarshal(&cfg)
 	common.HandleError(err)
-	// common.InitDefectTypes()
 }

@@ -4,6 +4,7 @@ package cmd
 import (
 	"bytes"
 	"fmt"
+	"io/fs"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -66,7 +67,9 @@ func initConfig(viper *viper.Viper, cmd *cobra.Command, cmdInfoList []map[string
 	for _, v := range cmdInfoList {
 		initViperVal(cmd, viper, v["cmdName"], v["valName"], v["defaultVal"], v["cmdDescription"])
 	}
+
 	err := viper.ReadInConfig()
+
 	common.HandleError(err)
 }
 
@@ -76,6 +79,7 @@ func initViperVal(cmd *cobra.Command, viper *viper.Viper, cmdName, valName, defa
 	} else {
 		viper.SetDefault(valName, viper.GetString(valName))
 	}
+
 	cmd.PersistentFlags().StringP(cmdName, "", viper.GetString(valName), cmdDescription)
 	err := viper.BindPFlag(valName, cmd.PersistentFlags().Lookup(cmdName))
 	common.HandleError(err)
@@ -83,12 +87,15 @@ func initViperVal(cmd *cobra.Command, viper *viper.Viper, cmdName, valName, defa
 
 func initTFAConfigFile(viper *viper.Viper) {
 	var file []byte
+
 	var err error
+
 	if os.Getenv("TFACON_CONFIG_PATH") != "" {
 		file, err = ioutil.ReadFile(os.Getenv("TFACON_CONFIG_PATH"))
 	} else {
 		file, err = ioutil.ReadFile("./tfacon.cfg")
 	}
+
 	defer func() {
 		if r := recover(); r != nil {
 			_, err = os.Create("tfacon.cfg")
@@ -112,21 +119,30 @@ func initWorkspace() {
 	common.HandleError(err)
 	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "You can add this tag to print more detailed info")
 	fmt.Println(pwd)
-	err = os.Mkdir("tfacon_workspace", 0700)
+
+	err = os.Mkdir("tfacon_workspace", fs.ModePerm)
+
 	common.HandleError(err)
-	err = os.Mkdir("/tmp/.tfacon", 0700)
+	err = os.Mkdir("/tmp/.tfacon", fs.ModePerm)
 	common.HandleError(err)
 	err = os.Chdir("/tmp/.tfacon/")
 	common.HandleError(err)
+
 	cmd := exec.Command("git", "clone", "https://github.com/JunqiZhang0/tfacon.git")
+
 	err = cmd.Run()
 	common.HandleError(err)
 	err = os.Chdir("/tmp/.tfacon/tfacon")
+
 	common.HandleError(err)
+
 	cmd = exec.Command("mv", "examples", pwd+"/tfacon_workspace")
+
 	err = cmd.Run()
 	common.HandleError(err)
+
 	cmd = exec.Command("rm", "/tmp/.tfacon", "-rf")
+
 	err = cmd.Run()
 	common.HandleError(err)
 }
