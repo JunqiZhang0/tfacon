@@ -39,8 +39,9 @@ func SendHTTPRequest(ctx context.Context, method, url,
 	req, err := http.NewRequestWithContext(ctx, method, url, body)
 	req.Header.Add("Authorization", fmt.Sprintf("bearer %s", auth_token))
 
-	err = fmt.Errorf("tfacon http handler crashed, request built failed, could be a bad request: %w", err)
 	if err != nil {
+		err = fmt.Errorf("tfacon http handler crashed, request built failed, could be a bad request: %w", err)
+
 		return nil, false, err
 	}
 
@@ -57,15 +58,16 @@ func SendHTTPRequest(ctx context.Context, method, url,
 		HandleError(err)
 	}()
 
-	err = fmt.Errorf("tfacon http handler crashed:%w", err)
 	if err != nil {
+		err = fmt.Errorf("tfacon http handler crashed:%w", err)
+
 		return nil, false, err
 	}
 
 	d, err := ioutil.ReadAll(resp.Body)
-	err = fmt.Errorf("tfacon http handler crashed, response read failed:%w", err)
-
 	if err != nil {
+		err = fmt.Errorf("tfacon http handler crashed, response read failed:%w", err)
+
 		return nil, false, err
 	}
 

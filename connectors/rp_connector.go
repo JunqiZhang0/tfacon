@@ -94,12 +94,12 @@ func (c *RPConnector) Validate(verbose bool) (bool, error) {
 
 func (c *RPConnector) validateTFAURL(verbose bool) (bool, error) {
 	body := `{"data": {"id": "123", "project": "rhv", "messages": ""}}`
+
 	_, success, err := common.SendHTTPRequest(context.Background(), http.MethodPost,
 		c.TFAURL, "", bytes.NewBuffer([]byte(body)), c.Client)
-	err = fmt.Errorf("validate tfa url failed: %w", err)
-
 	if err != nil {
-		fmt.Println(err)
+		err = fmt.Errorf("validate tfa url failed: %w", err)
+		common.HandleError(err)
 	}
 
 	if verbose {
@@ -143,11 +143,9 @@ func (c *RPConnector) validateProjectName(verbose bool) (bool, error) {
 func (c *RPConnector) validateRPURLAndAuthToken(verbose bool) (bool, error) {
 	_, success, err := common.SendHTTPRequest(context.Background(), http.MethodGet,
 		c.RPURL+"/api/v1/project/list", c.AuthToken, bytes.NewBuffer(nil), c.Client)
-
-	err = fmt.Errorf("validate rp url and auth token failed: %w", err)
-
 	if err != nil {
-		fmt.Println(err)
+		err = fmt.Errorf("validate rp url and auth token failed: %w", err)
+		common.HandleError(err)
 	}
 
 	if verbose {
