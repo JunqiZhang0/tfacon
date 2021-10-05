@@ -267,7 +267,11 @@ func (c *RPConnector) BuildIssueItemHelper(id string, add_attributes bool) Issue
 	var tfa_input common.TFAInput = c.BuildTFAInput(id, testlog)
 	prediction_json := c.GetPrediction(id, tfa_input)
 	prediction := gjson.Get(prediction_json, "result.prediction").String()
-	// prediction_code := common.DEFECT_TYPE[prediction]
+	// Added a default defect type
+	if common.TFA_DEFECT_TYPE_TO_SUB_TYPE[prediction] == nil {
+		prediction = "Automation Bug"
+	}
+
 	prediction_code := common.TFA_DEFECT_TYPE_TO_SUB_TYPE[prediction]["locator"]
 	// fmt.Println(prediction_code)
 	var issue_info IssueInfo = c.GetIssueInfoForSingleTestID(id)
