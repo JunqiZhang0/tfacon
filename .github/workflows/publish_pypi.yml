@@ -26,5 +26,5 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.PYPI_DNO_PASSWORD }}
         run: |
           cd pip_package/
-          python setup.py sdist bdist_wheel
-          twine upload dist/*
+          python -m build
+          python3 -m twine upload dist/* --verbose
