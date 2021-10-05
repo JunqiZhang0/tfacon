@@ -87,3 +87,87 @@ func TestGetCon(t *testing.T) {
 		})
 	}
 }
+
+func TestRun(t *testing.T) {
+	type args struct {
+		viperRun    *viper.Viper
+		viperConfig *viper.Viper
+	}
+	tests := []struct {
+		name string
+		args args
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			Run(tt.args.viperRun, tt.args.viperConfig)
+		})
+	}
+}
+
+func Test_runHelper(t *testing.T) {
+	type args struct {
+		viperConfig *viper.Viper
+		ids         []string
+		con         TFACon
+	}
+	tests := []struct {
+		name string
+		args args
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			runHelper(tt.args.viperConfig, tt.args.ids, tt.args.con)
+		})
+	}
+}
+
+func TestGetInfo(t *testing.T) {
+	type args struct {
+		viper *viper.Viper
+	}
+	tests := []struct {
+		name string
+		args args
+		want TFACon
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := GetInfo(tt.args.viper); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetInfo() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestValidate(t *testing.T) {
+	type args struct {
+		con   TFACon
+		viper *viper.Viper
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    bool
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := Validate(tt.args.con, tt.args.viper)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("Validate() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
