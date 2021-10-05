@@ -1,20 +1,12 @@
 import os
 import re
 
-from setuptools import find_packages, setup
-
-ROOT = os.path.dirname(__file__)
-VERSION_RE = re.compile(r'''__version__ = ['"]([a-zA-Z0-9.]+)['"]''')
-
-
-def get_version():
-    init = open(os.path.join(ROOT, 'tfacon_pip', '__init__.py')).read()
-    return VERSION_RE.search(init).group(1)
+from setuptools import  setup
 
 
 setup(
     name='tfacon',
-    version=get_version(),
+    version="1.0.6",
     description="tfacon",
     author="Red Hat Inc",
 )
