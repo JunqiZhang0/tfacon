@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - develop
-    paths:
-      - 'pip_package/tfacon_pip/__init__.py'
+    # paths:
+    #   - 'pip_package/tfacon_pip/__init__.py'
 
 jobs:
   deploy_pypi:
