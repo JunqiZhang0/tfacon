@@ -3,10 +3,10 @@ name: "Push the master branch to pypi when develop is merged to master and versi
 on:
   push:
     branches:
-      - develop
-    # paths:
-    #   - 'pip_package/tfacon_pip/__init__.py'
-    #   - 'pip_package/setup.py'
+      - master
+    paths:
+      - 'pip_package/tfacon_pip/__init__.py'
+      - 'pip_package/setup.py'
 
 jobs:
   deploy_pypi:
