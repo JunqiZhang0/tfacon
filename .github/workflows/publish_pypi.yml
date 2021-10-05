@@ -30,4 +30,4 @@ jobs:
         run: |
           cd pip_package/
           python3 -m build
-          python3 -m twine upload dist/* --verbose
+          python3 -m twine upload dist/*.gz --verbose
