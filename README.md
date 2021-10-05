@@ -4,7 +4,6 @@
 __tfacon__ is a CLI tool for connecting Test Management Platforms and __Test Failure Analysis Classifier__. __Test Failure Analysis Classifier__ is
 an AI/ML predictioner developed by *Red Hat D&O Data Science Team* which can predict the test's catalog. It supports __AutomationBug, ProductBug, SystemBug__ on Report Portal now. tfacon only support report portal at this moment. We will support more platforms in the future.
 
-
 ## User Guide
 ### Installation
 ##### Via go get
@@ -187,3 +186,8 @@ __You can enable this to add an extra attribute "AI Prediction" to all the test 
 ### Branch name
 __*develop*__ is the development branch
 __*master*__ is the stable branch
+
+### More Details
+#### Release Information
+#### Vedio Tutorial
+#### How To Embed tfacon to CI Pipelines
