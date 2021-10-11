@@ -52,8 +52,15 @@ func SendHTTPRequest(ctx context.Context, method, url,
 	resp, err := client.Do(req)
 
 	defer func() {
-		err = req.Body.Close()
-		HandleError(err)
+		if req != nil && req.Body != nil {
+			err = req.Body.Close()
+			HandleError(err)
+		}
+
+		if resp != nil && resp.Body != nil {
+			err = resp.Body.Close()
+			HandleError(err)
+		}
 	}()
 
 	if err != nil {
@@ -69,17 +76,33 @@ func SendHTTPRequest(ctx context.Context, method, url,
 		return nil, false, err
 	}
 
+	// if resp.StatusCode == http.StatusOK {
+	// 	return d, true, err
+	// }
+
+	// if method == "POST" && resp.StatusCode == http.StatusCreated {
+	// 	return d, true, err
+	// }
+
+	// err = fmt.Errorf("http handler request exception, status code is:%d, err is %w\n", resp.StatusCode, err)
+	success, err := httpHelper(method, resp)
+
+	return d, success, err
+}
+
+func httpHelper(method string, resp *http.Response) (bool, error) {
+	var err error
 	if resp.StatusCode == http.StatusOK {
-		return d, true, err
+		return true, err
 	}
 
 	if method == "POST" && resp.StatusCode == http.StatusCreated {
-		return d, true, err
+		return true, err
 	}
 
-	err = fmt.Errorf("http handler request exception, status code is:%d\n", resp.StatusCode)
+	err = fmt.Errorf("http handler request exception, status code is:%d, err is %w\n", resp.StatusCode, err)
 
-	return d, false, err
+	return false, err
 }
 
 // HandleError is the Error handler

@@ -113,7 +113,7 @@ func (c *RPConnector) validateLaunchInfo(verbose bool) (bool, error) {
 	launchinfoNotEmpty := c.LaunchID != "" || c.LaunchName != ""
 
 	if verbose {
-		fmt.Printf("lauchidValidate: %t\n", launchinfoNotEmpty)
+		fmt.Printf("lauchinfoValidate: %t\n", launchinfoNotEmpty)
 	}
 
 	if !launchinfoNotEmpty {
