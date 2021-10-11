@@ -187,5 +187,5 @@ __*master*__ is the stable branch
 
 ### More Details
 #### Release Information
-#### Vedio Tutorial
+#### Video Tutorial
 #### How To Embed tfacon to CI Pipelines
