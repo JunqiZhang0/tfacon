@@ -441,245 +441,245 @@ func TestRPConnector_UpdateAll(t *testing.T) {
 	}
 }
 
-func TestRPConnector_BuildUpdatedList(t *testing.T) {
-	type fields struct {
-		LaunchID    string
-		LaunchName  string
-		ProjectName string
-		AuthToken   string
-		RPURL       string
-		Client      *http.Client
-		TFAURL      string
-	}
-	type args struct {
-		ids            []string
-		concurrent     bool
-		add_attributes bool
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-		want   common.GeneralUpdatedList
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			c := &RPConnector{
-				LaunchID:    tt.fields.LaunchID,
-				LaunchName:  tt.fields.LaunchName,
-				ProjectName: tt.fields.ProjectName,
-				AuthToken:   tt.fields.AuthToken,
-				RPURL:       tt.fields.RPURL,
-				Client:      tt.fields.Client,
-				TFAURL:      tt.fields.TFAURL,
-			}
-			if got := c.BuildUpdatedList(tt.args.ids, tt.args.concurrent, tt.args.add_attributes); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("RPConnector.BuildUpdatedList() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
+// func TestRPConnector_BuildUpdatedList(t *testing.T) {
+// 	type fields struct {
+// 		LaunchID    string
+// 		LaunchName  string
+// 		ProjectName string
+// 		AuthToken   string
+// 		RPURL       string
+// 		Client      *http.Client
+// 		TFAURL      string
+// 	}
+// 	type args struct {
+// 		ids            []string
+// 		concurrent     bool
+// 		add_attributes bool
+// 	}
+// 	tests := []struct {
+// 		name   string
+// 		fields fields
+// 		args   args
+// 		want   common.GeneralUpdatedList
+// 	}{
+// 		// TODO: Add test cases.
+// 	}
+// 	for _, tt := range tests {
+// 		t.Run(tt.name, func(t *testing.T) {
+// 			c := &RPConnector{
+// 				LaunchID:    tt.fields.LaunchID,
+// 				LaunchName:  tt.fields.LaunchName,
+// 				ProjectName: tt.fields.ProjectName,
+// 				AuthToken:   tt.fields.AuthToken,
+// 				RPURL:       tt.fields.RPURL,
+// 				Client:      tt.fields.Client,
+// 				TFAURL:      tt.fields.TFAURL,
+// 			}
+// 			if got := c.BuildUpdatedList(tt.args.ids, tt.args.concurrent, tt.args.add_attributes); !reflect.DeepEqual(got, tt.want) {
+// 				t.Errorf("RPConnector.BuildUpdatedList() = %v, want %v", got, tt.want)
+// 			}
+// 		})
+// 	}
+// }
 
-func TestRPConnector_BuildIssues(t *testing.T) {
-	type fields struct {
-		LaunchID    string
-		LaunchName  string
-		ProjectName string
-		AuthToken   string
-		RPURL       string
-		Client      *http.Client
-		TFAURL      string
-	}
-	type args struct {
-		ids            []string
-		concurrent     bool
-		add_attributes bool
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-		want   Issues
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			c := &RPConnector{
-				LaunchID:    tt.fields.LaunchID,
-				LaunchName:  tt.fields.LaunchName,
-				ProjectName: tt.fields.ProjectName,
-				AuthToken:   tt.fields.AuthToken,
-				RPURL:       tt.fields.RPURL,
-				Client:      tt.fields.Client,
-				TFAURL:      tt.fields.TFAURL,
-			}
-			if got := c.BuildIssues(tt.args.ids, tt.args.concurrent, tt.args.add_attributes); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("RPConnector.BuildIssues() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
+// func TestRPConnector_BuildIssues(t *testing.T) {
+// 	type fields struct {
+// 		LaunchID    string
+// 		LaunchName  string
+// 		ProjectName string
+// 		AuthToken   string
+// 		RPURL       string
+// 		Client      *http.Client
+// 		TFAURL      string
+// 	}
+// 	type args struct {
+// 		ids            []string
+// 		concurrent     bool
+// 		add_attributes bool
+// 	}
+// 	tests := []struct {
+// 		name   string
+// 		fields fields
+// 		args   args
+// 		want   Issues
+// 	}{
+// 		// TODO: Add test cases.
+// 	}
+// 	for _, tt := range tests {
+// 		t.Run(tt.name, func(t *testing.T) {
+// 			c := &RPConnector{
+// 				LaunchID:    tt.fields.LaunchID,
+// 				LaunchName:  tt.fields.LaunchName,
+// 				ProjectName: tt.fields.ProjectName,
+// 				AuthToken:   tt.fields.AuthToken,
+// 				RPURL:       tt.fields.RPURL,
+// 				Client:      tt.fields.Client,
+// 				TFAURL:      tt.fields.TFAURL,
+// 			}
+// 			if got := c.BuildIssues(tt.args.ids, tt.args.concurrent, tt.args.add_attributes); !reflect.DeepEqual(got, tt.want) {
+// 				t.Errorf("RPConnector.BuildIssues() = %v, want %v", got, tt.want)
+// 			}
+// 		})
+// 	}
+// }
 
-func TestRPConnector_BuildIssuesConcurrent(t *testing.T) {
-	type fields struct {
-		LaunchID    string
-		LaunchName  string
-		ProjectName string
-		AuthToken   string
-		RPURL       string
-		Client      *http.Client
-		TFAURL      string
-	}
-	type args struct {
-		ids            []string
-		add_attributes bool
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-		want   Issues
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			c := &RPConnector{
-				LaunchID:    tt.fields.LaunchID,
-				LaunchName:  tt.fields.LaunchName,
-				ProjectName: tt.fields.ProjectName,
-				AuthToken:   tt.fields.AuthToken,
-				RPURL:       tt.fields.RPURL,
-				Client:      tt.fields.Client,
-				TFAURL:      tt.fields.TFAURL,
-			}
-			if got := c.BuildIssuesConcurrent(tt.args.ids, tt.args.add_attributes); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("RPConnector.BuildIssuesConcurrent() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
+// func TestRPConnector_BuildIssuesConcurrent(t *testing.T) {
+// 	type fields struct {
+// 		LaunchID    string
+// 		LaunchName  string
+// 		ProjectName string
+// 		AuthToken   string
+// 		RPURL       string
+// 		Client      *http.Client
+// 		TFAURL      string
+// 	}
+// 	type args struct {
+// 		ids            []string
+// 		add_attributes bool
+// 	}
+// 	tests := []struct {
+// 		name   string
+// 		fields fields
+// 		args   args
+// 		want   Issues
+// 	}{
+// 		// TODO: Add test cases.
+// 	}
+// 	for _, tt := range tests {
+// 		t.Run(tt.name, func(t *testing.T) {
+// 			c := &RPConnector{
+// 				LaunchID:    tt.fields.LaunchID,
+// 				LaunchName:  tt.fields.LaunchName,
+// 				ProjectName: tt.fields.ProjectName,
+// 				AuthToken:   tt.fields.AuthToken,
+// 				RPURL:       tt.fields.RPURL,
+// 				Client:      tt.fields.Client,
+// 				TFAURL:      tt.fields.TFAURL,
+// 			}
+// 			if got := c.BuildIssuesConcurrent(tt.args.ids, tt.args.add_attributes); !reflect.DeepEqual(got, tt.want) {
+// 				t.Errorf("RPConnector.BuildIssuesConcurrent() = %v, want %v", got, tt.want)
+// 			}
+// 		})
+// 	}
+// }
 
-func TestRPConnector_BuildIssueItemHelper(t *testing.T) {
-	type fields struct {
-		LaunchID    string
-		LaunchName  string
-		ProjectName string
-		AuthToken   string
-		RPURL       string
-		Client      *http.Client
-		TFAURL      string
-	}
-	type args struct {
-		id             string
-		add_attributes bool
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-		want   IssueItem
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			c := &RPConnector{
-				LaunchID:    tt.fields.LaunchID,
-				LaunchName:  tt.fields.LaunchName,
-				ProjectName: tt.fields.ProjectName,
-				AuthToken:   tt.fields.AuthToken,
-				RPURL:       tt.fields.RPURL,
-				Client:      tt.fields.Client,
-				TFAURL:      tt.fields.TFAURL,
-			}
-			if got := c.BuildIssueItemHelper(tt.args.id, tt.args.add_attributes); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("RPConnector.BuildIssueItemHelper() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
+// func TestRPConnector_BuildIssueItemHelper(t *testing.T) {
+// 	type fields struct {
+// 		LaunchID    string
+// 		LaunchName  string
+// 		ProjectName string
+// 		AuthToken   string
+// 		RPURL       string
+// 		Client      *http.Client
+// 		TFAURL      string
+// 	}
+// 	type args struct {
+// 		id             string
+// 		add_attributes bool
+// 	}
+// 	tests := []struct {
+// 		name   string
+// 		fields fields
+// 		args   args
+// 		want   IssueItem
+// 	}{
+// 		// TODO: Add test cases.
+// 	}
+// 	for _, tt := range tests {
+// 		t.Run(tt.name, func(t *testing.T) {
+// 			c := &RPConnector{
+// 				LaunchID:    tt.fields.LaunchID,
+// 				LaunchName:  tt.fields.LaunchName,
+// 				ProjectName: tt.fields.ProjectName,
+// 				AuthToken:   tt.fields.AuthToken,
+// 				RPURL:       tt.fields.RPURL,
+// 				Client:      tt.fields.Client,
+// 				TFAURL:      tt.fields.TFAURL,
+// 			}
+// 			if got := c.BuildIssueItemHelper(tt.args.id, tt.args.add_attributes); !reflect.DeepEqual(got, tt.want) {
+// 				t.Errorf("RPConnector.BuildIssueItemHelper() = %v, want %v", got, tt.want)
+// 			}
+// 		})
+// 	}
+// }
 
-func TestRPConnector_BuildIssueItemConcurrent(t *testing.T) {
-	type fields struct {
-		LaunchID    string
-		LaunchName  string
-		ProjectName string
-		AuthToken   string
-		RPURL       string
-		Client      *http.Client
-		TFAURL      string
-	}
-	type args struct {
-		issuesChan     chan<- IssueItem
-		idsChan        <-chan string
-		exitChan       chan<- bool
-		add_attributes bool
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			c := &RPConnector{
-				LaunchID:    tt.fields.LaunchID,
-				LaunchName:  tt.fields.LaunchName,
-				ProjectName: tt.fields.ProjectName,
-				AuthToken:   tt.fields.AuthToken,
-				RPURL:       tt.fields.RPURL,
-				Client:      tt.fields.Client,
-				TFAURL:      tt.fields.TFAURL,
-			}
-			c.BuildIssueItemConcurrent(tt.args.issuesChan, tt.args.idsChan, tt.args.exitChan, tt.args.add_attributes)
-		})
-	}
-}
+// func TestRPConnector_BuildIssueItemConcurrent(t *testing.T) {
+// 	type fields struct {
+// 		LaunchID    string
+// 		LaunchName  string
+// 		ProjectName string
+// 		AuthToken   string
+// 		RPURL       string
+// 		Client      *http.Client
+// 		TFAURL      string
+// 	}
+// 	type args struct {
+// 		issuesChan     chan<- IssueItem
+// 		idsChan        <-chan string
+// 		exitChan       chan<- bool
+// 		add_attributes bool
+// 	}
+// 	tests := []struct {
+// 		name   string
+// 		fields fields
+// 		args   args
+// 	}{
+// 		// TODO: Add test cases.
+// 	}
+// 	for _, tt := range tests {
+// 		t.Run(tt.name, func(t *testing.T) {
+// 			c := &RPConnector{
+// 				LaunchID:    tt.fields.LaunchID,
+// 				LaunchName:  tt.fields.LaunchName,
+// 				ProjectName: tt.fields.ProjectName,
+// 				AuthToken:   tt.fields.AuthToken,
+// 				RPURL:       tt.fields.RPURL,
+// 				Client:      tt.fields.Client,
+// 				TFAURL:      tt.fields.TFAURL,
+// 			}
+// 			c.BuildIssueItemConcurrent(tt.args.issuesChan, tt.args.idsChan, tt.args.exitChan, tt.args.add_attributes)
+// 		})
+// 	}
+// }
 
-func TestRPConnector_GetIssueInfoForSingleTestID(t *testing.T) {
-	type fields struct {
-		LaunchID    string
-		LaunchName  string
-		ProjectName string
-		AuthToken   string
-		RPURL       string
-		Client      *http.Client
-		TFAURL      string
-	}
-	type args struct {
-		id string
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-		want   IssueInfo
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			c := &RPConnector{
-				LaunchID:    tt.fields.LaunchID,
-				LaunchName:  tt.fields.LaunchName,
-				ProjectName: tt.fields.ProjectName,
-				AuthToken:   tt.fields.AuthToken,
-				RPURL:       tt.fields.RPURL,
-				Client:      tt.fields.Client,
-				TFAURL:      tt.fields.TFAURL,
-			}
-			if got := c.GetIssueInfoForSingleTestID(tt.args.id); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("RPConnector.GetIssueInfoForSingleTestID() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
+// func TestRPConnector_GetIssueInfoForSingleTestID(t *testing.T) {
+// 	type fields struct {
+// 		LaunchID    string
+// 		LaunchName  string
+// 		ProjectName string
+// 		AuthToken   string
+// 		RPURL       string
+// 		Client      *http.Client
+// 		TFAURL      string
+// 	}
+// 	type args struct {
+// 		id string
+// 	}
+// 	tests := []struct {
+// 		name   string
+// 		fields fields
+// 		args   args
+// 		want   IssueInfo
+// 	}{
+// 		// TODO: Add test cases.
+// 	}
+// 	for _, tt := range tests {
+// 		t.Run(tt.name, func(t *testing.T) {
+// 			c := &RPConnector{
+// 				LaunchID:    tt.fields.LaunchID,
+// 				LaunchName:  tt.fields.LaunchName,
+// 				ProjectName: tt.fields.ProjectName,
+// 				AuthToken:   tt.fields.AuthToken,
+// 				RPURL:       tt.fields.RPURL,
+// 				Client:      tt.fields.Client,
+// 				TFAURL:      tt.fields.TFAURL,
+// 			}
+// 			if got := c.GetIssueInfoForSingleTestID(tt.args.id); !reflect.DeepEqual(got, tt.want) {
+// 				t.Errorf("RPConnector.GetIssueInfoForSingleTestID() = %v, want %v", got, tt.want)
+// 			}
+// 		})
+// 	}
+// }
 
 func TestRPConnector_GetPrediction(t *testing.T) {
 	type fields struct {
@@ -761,76 +761,76 @@ func TestRPConnector_BuildTFAInput(t *testing.T) {
 	}
 }
 
-func TestRPConnector_GetAllTestIds(t *testing.T) {
-	type fields struct {
-		LaunchID    string
-		LaunchName  string
-		ProjectName string
-		AuthToken   string
-		RPURL       string
-		Client      *http.Client
-		TFAURL      string
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		want   []string
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			c := &RPConnector{
-				LaunchID:    tt.fields.LaunchID,
-				LaunchName:  tt.fields.LaunchName,
-				ProjectName: tt.fields.ProjectName,
-				AuthToken:   tt.fields.AuthToken,
-				RPURL:       tt.fields.RPURL,
-				Client:      tt.fields.Client,
-				TFAURL:      tt.fields.TFAURL,
-			}
-			if got := c.GetAllTestIds(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("RPConnector.GetAllTestIds() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
+// func TestRPConnector_GetAllTestIds(t *testing.T) {
+// 	type fields struct {
+// 		LaunchID    string
+// 		LaunchName  string
+// 		ProjectName string
+// 		AuthToken   string
+// 		RPURL       string
+// 		Client      *http.Client
+// 		TFAURL      string
+// 	}
+// 	tests := []struct {
+// 		name   string
+// 		fields fields
+// 		want   []string
+// 	}{
+// 		// TODO: Add test cases.
+// 	}
+// 	for _, tt := range tests {
+// 		t.Run(tt.name, func(t *testing.T) {
+// 			c := &RPConnector{
+// 				LaunchID:    tt.fields.LaunchID,
+// 				LaunchName:  tt.fields.LaunchName,
+// 				ProjectName: tt.fields.ProjectName,
+// 				AuthToken:   tt.fields.AuthToken,
+// 				RPURL:       tt.fields.RPURL,
+// 				Client:      tt.fields.Client,
+// 				TFAURL:      tt.fields.TFAURL,
+// 			}
+// 			if got := c.GetAllTestIds(); !reflect.DeepEqual(got, tt.want) {
+// 				t.Errorf("RPConnector.GetAllTestIds() = %v, want %v", got, tt.want)
+// 			}
+// 		})
+// 	}
+// }
 
-func TestRPConnector_GetTestLog(t *testing.T) {
-	type fields struct {
-		LaunchID    string
-		LaunchName  string
-		ProjectName string
-		AuthToken   string
-		RPURL       string
-		Client      *http.Client
-		TFAURL      string
-	}
-	type args struct {
-		test_id string
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-		want   []string
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			c := &RPConnector{
-				LaunchID:    tt.fields.LaunchID,
-				LaunchName:  tt.fields.LaunchName,
-				ProjectName: tt.fields.ProjectName,
-				AuthToken:   tt.fields.AuthToken,
-				RPURL:       tt.fields.RPURL,
-				Client:      tt.fields.Client,
-				TFAURL:      tt.fields.TFAURL,
-			}
-			if got := c.GetTestLog(tt.args.test_id); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("RPConnector.GetTestLog() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
+// func TestRPConnector_GetTestLog(t *testing.T) {
+// 	type fields struct {
+// 		LaunchID    string
+// 		LaunchName  string
+// 		ProjectName string
+// 		AuthToken   string
+// 		RPURL       string
+// 		Client      *http.Client
+// 		TFAURL      string
+// 	}
+// 	type args struct {
+// 		test_id string
+// 	}
+// 	tests := []struct {
+// 		name   string
+// 		fields fields
+// 		args   args
+// 		want   []string
+// 	}{
+// 		// TODO: Add test cases.
+// 	}
+// 	for _, tt := range tests {
+// 		t.Run(tt.name, func(t *testing.T) {
+// 			c := &RPConnector{
+// 				LaunchID:    tt.fields.LaunchID,
+// 				LaunchName:  tt.fields.LaunchName,
+// 				ProjectName: tt.fields.ProjectName,
+// 				AuthToken:   tt.fields.AuthToken,
+// 				RPURL:       tt.fields.RPURL,
+// 				Client:      tt.fields.Client,
+// 				TFAURL:      tt.fields.TFAURL,
+// 			}
+// 			if got := c.GetTestLog(tt.args.test_id); !reflect.DeepEqual(got, tt.want) {
+// 				t.Errorf("RPConnector.GetTestLog() = %v, want %v", got, tt.want)
+// 			}
+// 		})
+// 	}
+// }

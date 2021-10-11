@@ -27,7 +27,6 @@ var initCmd = &cobra.Command{
 	Short: "init will create a sample workspace for tfacon",
 	Long:  `init will create a sample workspace for tfacon`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// fmt.Println("init called")
 		initWorkspace()
 	},
 }

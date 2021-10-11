@@ -19,6 +19,13 @@ type TFACon interface {
 	String() string
 	InitConnector()
 	Validate(verbose bool) (bool, error)
+	RevertUpdatedList(verbose bool) common.GeneralUpdatedList
+}
+
+func Revert(viperRevert, viperConfig *viper.Viper) {
+	var con TFACon = GetCon(viperRevert)
+
+	runHelper(viperConfig, con.GetAllTestIds(), con, "revert")
 }
 
 // Run method is the run operation for any type of connector that
@@ -27,19 +34,28 @@ func Run(viperRun, viperConfig *viper.Viper) {
 	var con TFACon = GetCon(viperRun)
 
 	con.InitConnector()
-	runHelper(viperConfig, con.GetAllTestIds(), con)
+	runHelper(viperConfig, con.GetAllTestIds(), con, "run")
 }
 
-func runHelper(viperConfig *viper.Viper, ids []string, con TFACon) {
+func runHelper(viperConfig *viper.Viper, ids []string, con TFACon, operation string) {
 	if len(ids) == 0 {
 		return
 	}
 
-	updated_list_of_issues := con.BuildUpdatedList(ids, viperConfig.GetBool("config.concurrency"),
-		viperConfig.GetBool("config.add_attributes"))
+	var updated_list_of_issues common.GeneralUpdatedList
+
+	switch operation {
+	case "run":
+		updated_list_of_issues = con.BuildUpdatedList(ids, viperConfig.GetBool("config.concurrency"),
+			viperConfig.GetBool("config.add_attributes"))
+	case "revert":
+		updated_list_of_issues = con.RevertUpdatedList(viperConfig.GetBool("config.verbose"))
+	default:
+		updated_list_of_issues = con.RevertUpdatedList(viperConfig.GetBool("config.verbose"))
+	}
 	// Doing this because the api can only take 20 items per request
 	con.UpdateAll(updated_list_of_issues, viperConfig.GetBool("config.verbose"))
-	runHelper(viperConfig, con.GetAllTestIds(), con)
+	runHelper(viperConfig, con.GetAllTestIds(), con, operation)
 }
 
 // GetInfo method is the get info operation for any type of connector that
@@ -53,7 +69,6 @@ func GetInfo(viper *viper.Viper) TFACon {
 // Validate method is the validate operation for any type of connector that
 // implements TFACon interface.
 func Validate(con TFACon, viper *viper.Viper) (bool, error) {
-	// var con TFACon = GetCon(viper)
 	success, err := con.(*connectors.RPConnector).Validate(viper.GetBool("config.verbose"))
 	if err != nil {
 		err = fmt.Errorf("validate error: %w", err)

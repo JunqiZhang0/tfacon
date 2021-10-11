@@ -89,7 +89,7 @@ func (c *RPConnector) Validate(verbose bool) (bool, error) {
 
 	ret := validateRPURLAndAuthToken && validateTFA && projectnameNotEmpty && launchinfoNotEmpty
 
-	return ret, nil
+	return ret, err
 }
 
 func (c *RPConnector) validateTFAURL(verbose bool) (bool, error) {
@@ -513,4 +513,26 @@ func (c *RPConnector) GetLaunchID() string {
 	launchid := gjson.Get(string(data), "content.0.id").String()
 
 	return launchid
+}
+
+// Revert function will set all test items back to the
+// Original defect type.
+func (c *RPConnector) RevertUpdatedList(verbose bool) common.GeneralUpdatedList {
+	ids := c.GetAllTestIds()
+	issues := Issues{}
+
+	for _, id := range ids {
+		issues = append(issues, c.revertHelper(id))
+	}
+
+	return UpdatedList{IssuesList: issues}
+}
+
+func (c *RPConnector) revertHelper(id string) IssueItem {
+	var issue_info IssueInfo = c.GetIssueInfoForSingleTestID(id)
+	issue_info.IssueType = "ti001"
+
+	var issue_item IssueItem = IssueItem{Issue: issue_info, TestItemID: id}
+
+	return issue_item
 }

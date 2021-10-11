@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/JunqiZhang0/tfacon/common"
 	"github.com/spf13/cobra"
@@ -60,8 +61,20 @@ var cmdInfoList []map[string]string = []map[string]string{
 }
 
 func initConfig(viper *viper.Viper, cmd *cobra.Command, cmdInfoList []map[string]string) {
-	viper.AddConfigPath(".")
-	viper.SetConfigName("tfacon")
+	if os.Getenv("TFACON_YAML_PATH") != "" {
+		index := strings.LastIndex(os.Getenv("TFACON_YAML_PATH"), "/")
+		path := os.Getenv("TFACON_YAML_PATH")[:index]
+		viper.AddConfigPath(path)
+
+		configName := strings.Split(os.Getenv("TFACON_YAML_PATH")[index+1:], ".")
+		viper.SetConfigName(configName[0])
+	} else {
+		viper.AddConfigPath(".")
+		viper.SetConfigName("tfacon")
+	}
+
+	// viper.AddConfigPath(".")
+	// viper.SetConfigName("tfacon")
 	viper.AutomaticEnv()
 
 	for _, v := range cmdInfoList {

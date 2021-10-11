@@ -54,8 +54,6 @@ func SendHTTPRequest(ctx context.Context, method, url,
 	defer func() {
 		err = req.Body.Close()
 		HandleError(err)
-		err = resp.Body.Close()
-		HandleError(err)
 	}()
 
 	if err != nil {
@@ -79,7 +77,7 @@ func SendHTTPRequest(ctx context.Context, method, url,
 		return d, true, err
 	}
 
-	fmt.Printf("status code is:%v\n", resp.StatusCode)
+	err = fmt.Errorf("http handler request exception, status code is:%d\n", resp.StatusCode)
 
 	return d, false, err
 }

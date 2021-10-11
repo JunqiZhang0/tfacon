@@ -27,7 +27,7 @@ platform_url: "https://reportportal.com"
 tfa_url: "https://dave.corp.redhat.com:443/"
 connector_type: "RPCon"
 ```
-The default name is tfacon.yml, you can't change the name of this for this moment, we will add this feature later
+The default name is tfacon.yml, you can change this by edit this environment variable __TFACON_YAML_PATH__ 
 
 #### tfacon.cfg
 This is where you put all the config information for tfacon
@@ -164,7 +164,6 @@ __You can set up advanced config in ./tfacon.cfg by default or you can define th
 Example
 ```ini
 [config]
-retry_times=2
 concurrency=True
 add_attributes=true
 ```
@@ -175,7 +174,6 @@ __You can set this to True or False, if you set it to True tfacon will deal with
 #### add_attributes
 __You can enable this to add an extra attribute "AI Prediction" to all the test items, the value of this attribute will be the prediction extracted from TFA Classifier__
 
-#### Set retry(To be added)
 
 ## Developer Guide
 ### Archietrcue

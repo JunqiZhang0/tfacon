@@ -38,8 +38,6 @@ var rootCmd = &cobra.Command{
 			common.HandleError(err)
 			os.Exit(0)
 		}
-		// fmt.Println(args[0])
-		// fmt.Println(mid)
 	},
 	Version: "1.0.0",
 }
