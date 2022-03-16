@@ -26,7 +26,7 @@ var cmdInfoList []map[string]string = []map[string]string{
 		"cmdName":        "platform-url",
 		"valName":        "PLATFORM_URL",
 		"defaultVal":     "default val for platform url",
-		"cmdDescription": "The url to the test platform(example: https://reportportal-ccit.apps.ocp4.prod.psi.redhat.com)",
+		"cmdDescription": "The url to the test platform(example: https://reportportal-<your_domain>.com)",
 	},
 	{
 		"cmdName":        "connector-type",

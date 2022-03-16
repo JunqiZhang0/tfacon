@@ -20,11 +20,11 @@ pip install "git+https://github.com/JunqiZhang0/tfacon.git@develop#egg=tfacon&su
 This is where you store all parameters like this
 __You must use auth_token from a superadmin account to run tfacon, otherwise the validation will fail!__
 ```yaml
-launch_id: "your launch_id goes here"
-project_name: "your project name goes here"
+launch_id: "<your launch_id>"
+project_name: "<your project name>"
 auth_token: "xxxxx-xxxx-xxxxx-xxxx-xxxxx" 
-platform_url: "https://reportportal.com"
-tfa_url: "https://dave.corp.redhat.com:443/"
+platform_url: "https://reportportal-<your_domain>.com"
+tfa_url: "https://tfa-<your_domain>:443/"
 connector_type: "RPCon"
 ```
 The default name is tfacon.yml, you can change this by edit this environment variable __TFACON_YAML_PATH__ 
@@ -49,12 +49,12 @@ Usage:
 
 Flags:
       --auth-token string       The AUTH_TOKEN of report portal
-      --connector-type string   The type of connector you want to use(example: RPCon, PolarionCon, JiraCon) (default "RPCon")
+      --connector-type string   The type of connector you want to use (example: RPCon, PolarionCon, JiraCon) (default "RPCon")
   -h, --help                    help for list
       --launch-id string        The launch id of report portal
-      --platform-url string     The url to the test platform(example: https://reportportal-ccit.apps.ocp4.prod.psi.redhat.com) (default "default val for platform url")
+      --platform-url string     The url to the test platform (example: https://reportportal-<your_domain>.com) (default "default value for platform url")
       --project-name string     The project name of report portal
-      --tfa-url string          The url to the TFA Classifier (default "default val for tfa url")
+      --tfa-url string          The url to the TFA Classifier (default "default value for tfa url")
 ```
 
 Output Example:
@@ -70,9 +70,9 @@ Copyright (C) 2021, Red Hat, Inc.
 LaunchID:        968
 ProjectName:     TFA_RP
 AuthToken:       xxxx-xxxx-xxxxxxx-xxxxxx-xxxxxxxxx
-RPURL:           https://reportportal.com
+RPURL:           https://reportportal-<your_domain>.com
 Client:          &{<nil> <nil> <nil> 0s}
-TFAURL:          https://tfa.com
+TFAURL:          https://tfa-<your_domain>.com
 ```
 #### run
 ```bash
@@ -87,9 +87,9 @@ Flags:
       --connector-type string   The type of connector you want to use(example: RPCon, PolarionCon, JiraCon) (default "RPCon")
   -h, --help                    help for run
       --launch-id string        The launch id of report portal
-      --platform-url string     The url to the test platform(example: https://reportportal-ccit.apps.ocp4.prod.psi.redhat.com) (default "default val for platform url")
+      --platform-url string     The url to the test platform(example: https://reportportal-<your_domain>.com) (default "default value for platform url")
       --project-name string     The project name of report portal
-      --tfa-url string          The url to the TFA Classifier (default "default val for tfa url")
+      --tfa-url string          The url to the TFA Classifier (default "default value for tfa url")
 ```
 
 Example Output
@@ -121,9 +121,9 @@ Flags:
       --connector-type string   The type of connector you want to use(example: RPCon, PolarionCon, JiraCon) (default "RPCon")
   -h, --help                    help for validate
       --launch-id string        The launch id of report portal
-      --platform-url string     The url to the test platform(example: https://reportportal-ccit.apps.ocp4.prod.psi.redhat.com) (default "default val for platform url")
+      --platform-url string     The url to the test platform(example: https://reportportal-<your_domain>.com) (default "default value for platform url")
       --project-name string     The project name of report portal
-      --tfa-url string          The url to the TFA Classifier (default "default val for tfa url")
+      --tfa-url string          The url to the TFA Classifier (default "default value for tfa url")
 
 Global Flags:
   -v, --verbose   You can add this tag to print more detailed info
@@ -135,7 +135,7 @@ Example Output
 LaunchID:        231
 ProjectName:     TFACON
 AuthToken:       xxxxxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxx
-RPURL:           https://reportportal-dev.com
+RPURL:           https://reportportal-<your_domain>.com
 Client:          &{<nil> <nil> <nil> 0s}
 TFAURL:          https://tfa.com/latest/model
 
